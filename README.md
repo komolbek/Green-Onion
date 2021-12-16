@@ -17,7 +17,7 @@ Green Onio is a Web base project management application written in C# and .Net
   - [x] Domain class generation and Domain model diagram is done;
   - [x] Prediction and recommendation algorithms's activity diagram;
 - [ ] Implementation stage;
-  - [ ] Create a UI;
+  - [x] Create a UI;
   - [ ] Devide logic into flows and define main components to make implemenation easier;
 
 
