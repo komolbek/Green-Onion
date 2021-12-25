@@ -44,89 +44,89 @@ namespace GreenOnion.DomainModels
         {
             get
             {
-                return this.companyID;
+                return this.userID;
             }
             set
             {
-                this.companyID = value;
+                this.userID = value;
             }
         }
 
         private string name { get; set; }
-        public Int64 Name
+        public string Name
         {
             get
             {
-                return this.companyID;
+                return this.name;
             }
             set
             {
-                this.companyID = value;
+                this.name = value;
             }
         }
 
         private Ticket[] tickets { get; set; }
-        public Int64 Tickets
+        public Ticket[] Tickets
         {
             get
             {
-                return this.companyID;
+                return this.tickets;
             }
             set
             {
-                this.companyID = value;
+                this.tickets = value;
             }
         }
 
         private DateTime startedDate { get; set; }
-        public Int64 StartedDate
+        public DateTime StartedDate
         {
             get
             {
-                return this.companyID;
+                return this.startedDate;
             }
             set
             {
-                this.companyID = value;
+                this.startedDate = value;
             }
         }
 
         private DateTime closedDate { get; set; }
-        public Int64 ClosedDate
+        public DateTime ClosedDate
         {
             get
             {
-                return this.companyID;
+                return this.closedDate;
             }
             set
             {
-                this.companyID = value;
+                this.closedDate = value;
             }
         }
 
         private DateTime dueDate { get; set; }
-        public Int64 DueDate
+        public DateTime DueDate
         {
             get
             {
-                return this.companyID;
+                return this.dueDate;
             }
             set
             {
-                this.companyID = value;
+                this.dueDate = value;
             }
         }
 
         private User[] assignees { get; set; }
-        public Int64 Assignees
+        public User[] Assignees
         {
             get
             {
-                return this.companyID;
+                return this.assignees;
             }
             set
             {
-                this.companyID = value;
+                this.assignees = value;
             }
         }
     }
