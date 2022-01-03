@@ -13,9 +13,11 @@
   <ItemGroup>
     <None Remove="Utilities\" />
     <None Remove="Enums\" />
+    <None Remove="DataMappers\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Utilities\" />
     <Folder Include="Enums\" />
+    <Folder Include="DataMappers\" />
   </ItemGroup>
 </Project>
