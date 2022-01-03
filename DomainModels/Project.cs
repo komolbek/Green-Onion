@@ -18,9 +18,9 @@ namespace GreenOnion.DomainModels
         private string name;
         private List<Ticket>? tickets = null;
         private DateTime startedDate;
-        private DateTime? closedDate = null;
-        private DateTime? dueDate = null;
-        private List<User>? members = null;
+        private DateTime closedDate;
+        private DateTime? dueDate;
+        private List<User> members = null;
 
         public string ProjectID { get => projectID; set => projectID = value; }
         public string CompanyID { get => companyID; set => companyID = value; }
@@ -28,8 +28,8 @@ namespace GreenOnion.DomainModels
         public string Name { get => name; set => name = value; }
         public List<Ticket>? Tickets { get => tickets; set => tickets = value; }
         public DateTime StartedDate { get => startedDate; set => startedDate = value; }
-        public DateTime? ClosedDate { get => closedDate; set => closedDate = value; }
+        public DateTime ClosedDate { get => closedDate; set => closedDate = value; }
         public DateTime? DueDate { get => dueDate; set => dueDate = value; }
-        public List<User>? Members { get => members; set => members = value; }
+        public List<User> Members { get => members; set => members = value; }
     }
 }

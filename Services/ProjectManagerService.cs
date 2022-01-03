@@ -19,14 +19,15 @@ namespace GreenOnion.Services
             this.ticketDataMapper = new TicketDataMapper();
         }
 
-        public Project CreateProject(string name, string companyID, string creatorID, DateTime? dueDate, List<Ticket>[]? tickets)
+        public Project CreateProject(string name, string companyID, string creatorID, DateTime? dueDate = null, List<Ticket>? tickets = null)
         {
             Project project = new Project();
             project.Name = name;
             project.CompanyID = companyID;
             project.CreatorID = creatorID;
-            project.DueDate = (DateTime)dueDate;
+            project.DueDate = dueDate;
             project.StartedDate = DateTime.Today;
+            project.Tickets = tickets;
 
             this.projectDataMapper.insert(project);
 

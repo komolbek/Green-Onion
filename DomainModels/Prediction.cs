@@ -22,10 +22,10 @@ namespace GreenOnion.DomainModels
         // "historical data" means the projects of the company & the tickets of the projects.
         private DateTime projectDueByHistoricalData;
 
-        public int RequiredNumOfMembers { get => requiredNumOfMembers; set => requiredNumOfMembers = value; }
-        public int RequiredNumOfTickets { get => requiredNumOfTickets; set => requiredNumOfTickets = value; }
-        public string ProjectDurationByTicketComplexity { get => projectDurationByTicketComplexity; set => projectDurationByTicketComplexity = value; }
-        public string ProjectDurationByHistoricalData { get => projectDurationByHistoricalData; set => projectDurationByHistoricalData = value; }
+        public int NumOfMembers { get => requiredNumOfMembers; set => requiredNumOfMembers = value; }
+        public int NumOfTickets { get => requiredNumOfTickets; set => requiredNumOfTickets = value; }
+        public string DurationByTicketComplexity { get => projectDurationByTicketComplexity; set => projectDurationByTicketComplexity = value; }
+        public string DurationByHistoricalData { get => projectDurationByHistoricalData; set => projectDurationByHistoricalData = value; }
         public DateTime ProjectDueByTicketComplexity { get => projectDueByTicketComplexity; set => projectDueByTicketComplexity = value; }
         public DateTime ProjectDueByHistoricalData { get => projectDueByHistoricalData; set => projectDueByHistoricalData = value; }
 
