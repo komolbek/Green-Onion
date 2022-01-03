@@ -18,19 +18,33 @@ namespace GreenOnion.Services
             this.validator = new Validator();
         }
 
-        public bool CreateUser()
+        public bool CreateUser(string name, string password)
         {
+            User user = new User(name, password);
+            
+            return this.userDataMapper.Insert(user);
+        }
+
+        private bool CheckUserIdentity(string name, string password)
+        {
+            
             return true;
         }
 
-        private bool CheckUserIdentity()
+        public User? GetUser(string name, string password)
         {
-            return true;
-        }
+            User userToCheck = new User(name, password);
 
-        public User GetUser()
-        {
-            return new User();
+            User retrievedUser = this.userDataMapper.Select(userToCheck);
+
+            if (retrievedUser != null)
+            {
+                return retrievedUser;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public bool ChangeUser(string name, string password, string aboutInfo, string lastName)

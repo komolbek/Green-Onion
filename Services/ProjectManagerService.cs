@@ -55,7 +55,7 @@ namespace GreenOnion.Services
         // Gets User & Project from DB by IDs, adds User to Project and updates Project records in the DB
         public bool AddMember(string userID, string projID)
         {
-            User userObj = this.userDataMapper.Select(userID);
+            User userObj = this.userDataMapper.SelectById(userID);
             Project projectObj = this.projectDataMapper.Select(projID);
 
             projectObj.Members.Add(userObj);
