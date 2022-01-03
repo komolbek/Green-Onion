@@ -19,12 +19,12 @@ namespace GreenOnion.DataMappers
             return true;
         }
 
-        public Project select(string projID)
+        public Project Select(string projID)
         {
             return new Project();
         }
 
-        public bool update(Project project)
+        public bool Update(Project project)
         {
             return true;
         }
