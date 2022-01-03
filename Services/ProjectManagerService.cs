@@ -128,7 +128,24 @@ namespace GreenOnion.Services
 
         public Dictionary<string, List<Ticket>> GetTicketsSortedInProjectLists(string projID)
         {
-            return new Dictionary<string, List<Ticket>>();
+            Project project = this.projectDataMapper.Select(projID);
+            Dictionary<string, List<Ticket>> filteredTicketsByProjectLists = new Dictionary<string, List<Ticket>>();
+
+            foreach (Ticket ticket in project.Tickets)
+            {
+                if (ticket.Status == "todo")
+                {
+                    filteredTicketsByProjectLists["todo"].Add(ticket);
+                } else if (ticket.Status == "doing")
+                {
+                    filteredTicketsByProjectLists["doing"].Add(ticket);
+                } else
+                {
+                    filteredTicketsByProjectLists["done"].Add(ticket);
+                }
+            }
+
+            return filteredTicketsByProjectLists;
         }
     }
 }
