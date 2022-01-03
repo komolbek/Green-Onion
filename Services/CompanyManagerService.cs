@@ -9,40 +9,46 @@ namespace GreenOnion.Services
     {
 
         private CompanyDataMapper companyDataMapper;
+        private ProjectManagerService projectManagerService;
 
         public CompanyManagerService()
         {
-            this.companyDataMapper = new CompanyDataMapper()
+            this.companyDataMapper = new CompanyDataMapper();
+            this.projectManagerService = new ProjectManagerService();
         }
 
-        public bool CreateCompany()
+        public bool CreateCompany(string name, string aboutInfo)
         {
-            return true;
+            Company company = new Company();
+            company.Name = name;
+            company.AboutInfo = aboutInfo;
+
+            return this.companyDataMapper.Insert(company);
         }
 
-        public bool AddProject()
+        public bool AddProject(string companyID, string projectID)
         {
-            return true
+            Project project = this.projectManagerService.GetProject(projectID);
+            Company company = this.companyDataMapper.Select(companyID);
+
+            company.Projects.Add(project);
+
+            return this.companyDataMapper.Update(company);
         }
 
-        public List<Project> GetProjects()
+        public List<Project> GetProjects(string companyID) => companyDataMapper.Select(companyID).Projects;
+
+        public bool DeleteCompany(string companyID) => this.companyDataMapper.Delete(companyID);
+
+        public bool ChangeCompany(string name, string aboutInfo)
         {
-            return new List<Project>();
+            Company company = new Company();
+            company.Name = name;
+            company.AboutInfo = aboutInfo;
+
+            return this.companyDataMapper.Update(company);
         }
 
-        public bool DeleteCompany()
-        {
-            return true;
-        }
-
-        public bool ChangeCompany()
-        {
-            return true;
-        }
-
-        public Company GetCompany()
-        {
-            return new Company();
-        }
+        public Company GetCompany(string companyID) => this.companyDataMapper.Select(companyID);
     }
 }

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+
 namespace GreenOnion.DomainModels
 {
     public class Company
@@ -10,11 +12,11 @@ namespace GreenOnion.DomainModels
         private string companyID;
         private string name;
         private string aboutInfo;
-        private Project[] projects;
+        private List<Project> projects;
 
         public string CompanyID { get => companyID; set => companyID = value; }
         public string Name { get => name; set => name = value; }
         public string AboutInfo { get => aboutInfo; set => aboutInfo = value; }
-        public Project[] Projects { get => projects; set => projects = value; }
+        public List<Project> Projects { get => projects; set => projects = value; }
     }
 }
