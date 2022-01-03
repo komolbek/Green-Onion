@@ -20,8 +20,10 @@ namespace GreenOnion.Services
 
         public bool CreateUser(string name, string password)
         {
-            User user = new User(name, password);
-            
+            User user = new User();
+            user.Name = name;
+            user.Password = password;
+
             return this.userDataMapper.Insert(user);
         }
 
@@ -33,7 +35,9 @@ namespace GreenOnion.Services
 
         public User? GetUser(string name, string password)
         {
-            User userToCheck = new User(name, password);
+            User userToCheck = new User();
+            userToCheck.Name = name;
+            userToCheck.Password = password;
 
             User retrievedUser = this.userDataMapper.Select(userToCheck);
 
@@ -47,9 +51,19 @@ namespace GreenOnion.Services
             }
         }
 
-        public bool ChangeUser(string name, string password, string aboutInfo, string lastName)
+        public bool ChangeUserPassword(string newPassword)
         {
             return true;
+        }
+
+        public bool ChangeUser(string name, string aboutInfo, string lastName)
+        {
+            User newUserData = new User();
+            newUserData.Name = name;
+            newUserData.AboutMe = aboutInfo;
+            newUserData.LastName = lastName;
+
+            return this.userDataMapper.Update(newUserData); ;
         }
 
         public void LogOut()

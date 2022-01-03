@@ -5,9 +5,10 @@ namespace GreenOnion.DomainModels
 {
     public class User
     {
-        public User()
+        public User(/*string name, string password*/)
         {
-            
+            //this.name = name;
+            //this.password = password;
         }
 
         private string userID;
