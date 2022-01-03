@@ -9,72 +9,126 @@ namespace GreenOnion.Services
     {
 
         private ProjectDataMapper projectDataMapper;
+        private UserDataMapper userDataMapper;
+        private TicketDataMapper ticketDataMapper;
 
-        public ProjectManagerService(ProjectDataMapper projectDataMapper)
+        public ProjectManagerService()
         {
-            this.projectDataMapper = projectDataMapper;
+            this.projectDataMapper = new ProjectDataMapper();
+            this.userDataMapper = new UserDataMapper();
+            this.ticketDataMapper = new TicketDataMapper();
         }
 
-        public Project CreateProject(string name, string companyID, string creatorID, DateTime? dueDate, Ticket[]? tickets)
+        public Project CreateProject(string name, string companyID, string creatorID, DateTime? dueDate, List<Ticket>[]? tickets)
         {
+            Project project = new Project();
+            project.Name = name;
+            project.CompanyID = companyID;
+            project.CreatorID = creatorID;
+            project.DueDate = (DateTime)dueDate;
+            project.StartedDate = DateTime.Today;
+
+            this.projectDataMapper.insert(project);
 
             return new Project();
-        }
-
-        // generates current date to add to startDate attribute of Project while creating object.
-        private DateTime generateStartDate()
-        {
-            return new DateTime();
         }
 
         public bool DeleteProject(string projID)
         {
-            return true;
+            return this.projectDataMapper.deleteBy(projID);
         }
 
         public Project GetProject(string projID)
         {
-            return new Project();
+            return projectDataMapper.Select(projID);
         }
 
-        public bool ChangeProject(string projID, string? name, DateTime? dueDate, Ticket[]? tickets)
+        public bool ChangeProject(string projID, string? name, DateTime? dueDate, List<Ticket>[]? tickets)
         {
-            return true;
+            Project project = this.projectDataMapper.Select(projID);
+            project.Name = name;
+            project.DueDate = dueDate;
+
+            return this.projectDataMapper.Update(project);
         }
 
+        // Gets User & Project from DB by IDs, adds User to Project and updates Project records in the DB
         public bool AddMember(string userID, string projID)
         {
-            return true;
+            User userObj = this.userDataMapper.Select(userID);
+            Project projectObj = this.projectDataMapper.Select(projID);
+
+            projectObj.Members.Add(userObj);
+
+            return this.projectDataMapper.Update(projectObj);
         }
 
-        public User[] GetMembers(string projID)
+        public List<User>? GetMembers(string projID)
         {
-            return new User[]{};
+            List<User> members = this.projectDataMapper.Select(projID).Members;
+
+            if (members.Count > 0)
+            {
+                return members;
+            }
+            else
+            {
+                return null;
+            }
         }
 
-        public Ticket[] GetTickets(string projID)
+        public List<Ticket>? GetTickets(string projID)
         {
-            return new Ticket[]{};
+            List<Ticket> tickets = this.projectDataMapper.Select(projID).Tickets;
+
+            if (tickets.Count > 0)
+            {
+                return tickets;
+            } else
+            {
+                return null;
+            }
+            
         }
 
+        // Gets Ticket & Project from DB by IDs, adds Ticket to Project and updates Project records in the DB
         public bool AddTicket(string projID, string ticketID)
         {
-            return true;
+            Ticket ticket = this.ticketDataMapper.Select(ticketID);
+            Project project = this.projectDataMapper.Select(projID);
+
+            project.Tickets.Add(ticket);          
+
+            return this.projectDataMapper.Update(project);
         }
 
+        // Gets Ticket & Project from DB by IDs, remotves Ticket from Project and updates Project records in the DB
         public bool RemoveTicket(string projID, string ticketID)
         {
-            return true;
+            Ticket ticket = this.ticketDataMapper.Select(ticketID);
+            Project project = this.projectDataMapper.Select(projID);
+
+            project.Tickets.Remove(ticket);
+
+            return this.projectDataMapper.Update(project);
         }
 
-        public bool MoveTicket(string projID, string ticketID, string toList)
+        // changes ticket's list by removing it from previous list using previousTicketStatus
+        // and using ticket object's new status adds to the new list.
+        public Dictionary<string, List<Ticket>> MoveTicket(Dictionary<string, List<Ticket>> projectTickets, Ticket ticket, string previousTicketStatus)
         {
-            return true;
+            string newTicketList = ticket.Status;
+            string oldTicketList = previousTicketStatus;
+
+            projectTickets[newTicketList].Add(ticket);
+            projectTickets[oldTicketList].Remove(ticket);
+
+            return projectTickets;
         }
 
-        public Dictionary<string, Ticket[]> GetTicketsSortedInProjectLists(string projID)
+        public Dictionary<string, List<Ticket>> GetTicketsSortedInProjectLists(string projID)
         {
-            return new Dictionary<string, Ticket[]>();
+            return new Dictionary<string, List<Ticket>>();
         }
     }
 }
