@@ -11,123 +11,24 @@ namespace GreenOnion.DomainModels
 
         }
 
-        private Int64 projectID { get; set; }
-        public Int64 ProjectID
-        {
-            get
-            {
-                return this.projectID;
-            }
-            set
-            {
-                IDToIntGenerator idGenerator = new IDToIntGenerator();
+        private string projectID;
+        private string companyID;
+        private string creatorID;
+        private string name;
+        private Ticket[] tickets;
+        private DateTime startedDate;
+        private DateTime closedDate;
+        private DateTime dueDate;
+        private User[] members;
 
-                this.projectID = idGenerator.Generate();
-            }
-        }
-
-        private Int64 companyID { get; set; }
-        public Int64 CompanyID
-        {
-            get
-            {
-                return this.companyID;
-            }
-            set
-            {
-                this.companyID = value;
-            }
-        }
-
-        private Int64 userID { get; set; }
-        public Int64 UserID
-        {
-            get
-            {
-                return this.userID;
-            }
-            set
-            {
-                this.userID = value;
-            }
-        }
-
-        private string name { get; set; }
-        public string Name
-        {
-            get
-            {
-                return this.name;
-            }
-            set
-            {
-                this.name = value;
-            }
-        }
-
-        private Ticket[] tickets { get; set; }
-        public Ticket[] Tickets
-        {
-            get
-            {
-                return this.tickets;
-            }
-            set
-            {
-                this.tickets = value;
-            }
-        }
-
-        private DateTime startedDate { get; set; }
-        public DateTime StartedDate
-        {
-            get
-            {
-                return this.startedDate;
-            }
-            set
-            {
-                this.startedDate = value;
-            }
-        }
-
-        private DateTime closedDate { get; set; }
-        public DateTime ClosedDate
-        {
-            get
-            {
-                return this.closedDate;
-            }
-            set
-            {
-                this.closedDate = value;
-            }
-        }
-
-        private DateTime dueDate { get; set; }
-        public DateTime DueDate
-        {
-            get
-            {
-                return this.dueDate;
-            }
-            set
-            {
-                this.dueDate = value;
-            }
-        }
-
-        private User[] assignees { get; set; }
-        public User[] Assignees
-        {
-            get
-            {
-                return this.assignees;
-            }
-            set
-            {
-                this.assignees = value;
-            }
-        }
+        public string ProjectID { get => projectID; set => projectID = value; }
+        public string CompanyID { get => companyID; set => companyID = value; }
+        public string UserID { get => creatorID; set => creatorID = value; }
+        public string Name { get => name; set => name = value; }
+        public Ticket[] Tickets { get => tickets; set => tickets = value; }
+        public DateTime StartedDate { get => startedDate; set => startedDate = value; }
+        public DateTime ClosedDate { get => closedDate; set => closedDate = value; }
+        public DateTime DueDate { get => dueDate; set => dueDate = value; }
+        public User[] Members { get => members; set => members = value; }
     }
 }
