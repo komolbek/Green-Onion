@@ -40,9 +40,9 @@ namespace GreenOnion.Services
 
         public bool DeleteCompany(string companyID) => this.companyDataMapper.Delete(companyID);
 
-        public bool ChangeCompany(string name, string aboutInfo)
+        public bool ChangeCompany(string companyID, string name, string aboutInfo)
         {
-            Company company = new Company();
+            Company company = this.companyDataMapper.Select(companyID);
             company.Name = name;
             company.AboutInfo = aboutInfo;
 

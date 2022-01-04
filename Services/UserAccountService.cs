@@ -56,9 +56,9 @@ namespace GreenOnion.Services
             return true;
         }
 
-        public bool ChangeUser(string name, string aboutInfo, string lastName)
+        public bool ChangeUser(string userID, string name, string aboutInfo, string lastName)
         {
-            User newUserData = new User();
+            User newUserData = this.userDataMapper.SelectById(userID);
             newUserData.Name = name;
             newUserData.AboutMe = aboutInfo;
             newUserData.LastName = lastName;
