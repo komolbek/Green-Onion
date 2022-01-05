@@ -17,7 +17,7 @@ namespace GreenOnion.Services
             this.ticketManagerService = new TicketManagerService();
     }
 
-        // this method return closed Projects within selected date range
+        // this method returns closed Projects within selected date range
         public List<Project>? GetClosedProjects(DateTime startDate, DateTime endDate)
         {
 
@@ -41,7 +41,7 @@ namespace GreenOnion.Services
             }           
         }
 
-        // this method return closed Tickets within selected date range
+        // this method returns closed Tickets within selected date range
         public List<Ticket>? GetClosedTickets(DateTime startDate, DateTime endDate)
         {
 
@@ -118,9 +118,9 @@ namespace GreenOnion.Services
         {
             Dictionary<string, int> usersProductivity = new Dictionary<string, int> ();
 
-            Project project = this.projectManagerService.GetProject(projectID);
+            var project = this.projectManagerService.GetProject(projectID);
 
-            for (int i = 0; i < project.Tickets.Count; i++)
+            for (var i = 0; i < project.Tickets.Count; i++)
             {
                 if (project.Tickets[i].Status == TicketStatus.Done.ToString())
                 {
@@ -142,7 +142,7 @@ namespace GreenOnion.Services
                     }
                 }
             }
-                        
+            // TODO: what if no completed tickets in project??              
             return usersProductivity;
         }
     }

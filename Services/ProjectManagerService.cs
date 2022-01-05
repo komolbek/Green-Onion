@@ -114,6 +114,7 @@ namespace GreenOnion.Services
             return this.projectDataMapper.Update(project);
         }
 
+        // TODO: add documentation explaining what this methods returns!!!
         // changes ticket's list by removing it from previous list using previousTicketStatus
         // and using ticket object's new status adds to the new list.
         public Dictionary<string, List<Ticket>> MoveTicket(Dictionary<string, List<Ticket>> projectTickets, Ticket ticket, string previousTicketStatus)
