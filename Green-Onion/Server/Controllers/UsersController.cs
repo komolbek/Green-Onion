@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using GreenOnion.Server.Datalayer.Dataaccess;
 using GreenOnion.DomainModels;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace GreenOnion.Server.Controllers
 {
@@ -78,12 +79,21 @@ namespace GreenOnion.Server.Controllers
             }
 
             return NoContent();
-        }        
+        }
+
+        // Get user's companies
+        // GET: api/User
+        [HttpGet("{id}")]
+        public async Task<ActionResult<List<Company>>> GetCompaniesByUserId(string id)
+        {
+            User user = await _userContext.users.FindAsync(id);
+
+            return user.Companies;
+        }
 
         private bool UserExists(string id)
         {
             return _userContext.users.Any(e => e.UserID == id);
-
         }
     }
 }

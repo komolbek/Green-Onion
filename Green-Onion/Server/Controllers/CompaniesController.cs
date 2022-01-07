@@ -80,6 +80,22 @@ namespace GreenOnion.Server.Controllers
             return NoContent();
         }
 
+        // Remove project from company
+        // UPDATE: api/Company
+        [HttpPut("{companyId/projectId}")]
+        public async Task<ActionResult<Company>> RemoveProject(string copmanyId, string projectId)
+        {
+            // FIXME: implemeted deleting Project entity from DB as well. Now it's just removing it from list I guess.
+
+            Company company = await _context.companies.FindAsync(copmanyId);
+            Project project = company.Projects.Find(proj => proj.ProjectID == projectId);
+
+            company.Projects.Remove(project);
+            await _context.SaveChangesAsync();
+
+            return company;
+        }
+
         // Change company data by its id
         // DELETE: api/Company
         [HttpDelete("{id}")]
