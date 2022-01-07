@@ -85,7 +85,7 @@ namespace GreenOnion.Server.Controllers
         [HttpPut("{companyId/projectId}")]
         public async Task<ActionResult<Company>> RemoveProject(string copmanyId, string projectId)
         {
-            // FIXME: implemeted deleting Project entity from DB as well. Now it's just removing it from list I guess.
+            // TODO: implemeted deleting Project entity from DB as well. Now it's just removing it from list I guess.
 
             Company company = await _context.companies.FindAsync(copmanyId);
             Project project = company.Projects.Find(proj => proj.ProjectID == projectId);
