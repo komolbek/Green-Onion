@@ -29,9 +29,11 @@
     <None Remove="Data layer\Data access\" />
     <None Remove="Data layer\Domain models %28copy%29\" />
     <None Remove="DataLayer\DataAccess\" />
+    <None Remove="Enums\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers\" />
     <Folder Include="DataLayer\DataAccess\" />
+    <Folder Include="Enums\" />
   </ItemGroup>
 </Project>
