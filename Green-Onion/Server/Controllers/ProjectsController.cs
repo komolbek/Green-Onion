@@ -40,7 +40,7 @@ namespace GreenOnion.Server.Controllers
             return await _context.projects.FindAsync(projID);
         }
 
-        // Change project's date by its id
+        // Change project's data by its id
         // PUT: api/Project
         [HttpPut("{id}")]
         public async Task<ActionResult<Project>> ChangeProject(string projID, Project newPoject)
@@ -117,7 +117,7 @@ namespace GreenOnion.Server.Controllers
 
         // Remove ticket from project
         // UPDATE: api/Project
-        [HttpPut("{projectId/ticketId}")]
+        [HttpPut("{projectId}/{ticketId}")]
         public async Task<ActionResult<Project>> RemoveProject(string projectId, string ticketId)
         {
             // TODO: implemeted deleting Ticket entity from DB as well. Now it's just removing it from list I guess.
@@ -133,7 +133,7 @@ namespace GreenOnion.Server.Controllers
 
         // Moves ticket in project list by changign ticket status in selected project & updates DB.
         // PUT: api/project
-        [HttpPut("{projectId/ticketId}")]
+        [HttpPut("{projectId}/{ticketId}")]
         public async Task<ActionResult<Dictionary<string, List<Ticket>>>> MoveTicket(string projectId, string ticketId, string newTicketStatus, string oldTicketStatus)
         {
             Project project = await _context.projects.FindAsync(projectId);
