@@ -149,7 +149,7 @@ namespace GreenOnion.Server.Controllers
             User ticketAssignee = await _userContext.users.FindAsync(ticket.AssigneeID);
 
             ticket.AssigneeID = assigneeID;
-            ticketAssignee.AssignedTickets.Add(ticket);
+            _userContext.users.Add(ticketAssignee);
 
             await _ticketContext.SaveChangesAsync();
             await _userContext.SaveChangesAsync();
@@ -165,10 +165,13 @@ namespace GreenOnion.Server.Controllers
         {
             Ticket ticket = await _ticketContext.tickets.FindAsync(ticketID);
             User ticketAssignee = await _userContext.users.FindAsync(ticket.AssigneeID);
+            Project project = await _projectContext.projects.FindAsync(ticket.ProjectID);
 
             ticket.AssigneeID = null;
             ticketAssignee.AssignedTickets.Remove(ticket);
+            project.Members.Remove(ticketAssignee);
 
+            await _projectContext.SaveChangesAsync();
             await _ticketContext.SaveChangesAsync();
             await _userContext.SaveChangesAsync();
 

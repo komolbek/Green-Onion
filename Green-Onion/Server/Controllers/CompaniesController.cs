@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using GreenOnion.Server.DataLayer.DataAccess;
 using System.Linq;
 using System.Collections.Generic;
+using GreenOnion.Server.Datalayer.Dataaccess;
 
 namespace GreenOnion.Server.Controllers
 {
@@ -13,35 +14,57 @@ namespace GreenOnion.Server.Controllers
     public class CompaniesController : ControllerBase
     {
 
-        private readonly CompanyDbContext _context;
+        private readonly CompanyDbContext _companyContext;
+        private readonly ProjectDbContext _projectContext;
+        private readonly UserDbContext _userContext;
+        private readonly TicketDbContext _ticketContext;
 
-        public CompaniesController(CompanyDbContext context)
+        public CompaniesController(CompanyDbContext context, UserDbContext userContext, ProjectDbContext projectContext, TicketDbContext ticketContext)
         {
-            this._context = context;
+            this._companyContext = context;
+            this._userContext = userContext;
+            this._ticketContext = ticketContext;
+            this._projectContext = projectContext;
         }
 
         // Create company
         // POST: api/Company
         [HttpPost]
-        public async Task<ActionResult<Company>> CreateCompany(Company company)
+        [Route("{creatorId}/{projectId}")]
+        public async Task<ActionResult<Company>> CreateCompany(string creatorId, string projectId, Company company)
         {
-            _context.companies.Add(company);
-            await _context.SaveChangesAsync();
+
+            _companyContext.companies.Add(company);
+            await _companyContext.SaveChangesAsync();
+
+            // user who creates company in app
+            User companyCreator = await _userContext.users.FindAsync(creatorId);
+            companyCreator.Companies.Add(company);
+            await _userContext.SaveChangesAsync();
+
+            // add project's company
+            Project project = await _projectContext.projects.FindAsync(projectId);
+            project.CompanyID = company.CompanyID;
+            await _projectContext.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetCompanyById), new { id = company.CompanyID }, company);
         }
 
         // Add project into the context
         // PUT: api/Company
-        [HttpPut("{id}")]
+        [HttpPut("{companyId}")]
         public async Task<ActionResult<Company>> AddProject(string companyID, Project project)
         {
-            Company copmpany = await _context.companies.FindAsync(companyID);
-            copmpany.Projects.Add(project);
+            Company company = await _companyContext.companies.FindAsync(companyID);
+            company.Projects.Add(project);
+
+            // add project to DB
+            _projectContext.projects.Add(project);
+            await _projectContext.SaveChangesAsync();
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _companyContext.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -63,41 +86,126 @@ namespace GreenOnion.Server.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<List<Project>>> GetProjects(string companyID)
         {
-            Company company = await _context.companies.FindAsync(companyID);
+            Company company = await _companyContext.companies.FindAsync(companyID);
 
             return company.Projects;
         }
 
         // Delete company by id
         // DELETE: api/Company
-        [HttpDelete("{id}")]
+        [HttpDelete("{companyId}")]
         public async Task<ActionResult> DeleteCompany(string companyID)
         {
-            Company company = await _context.companies.FindAsync(companyID);
-            _context.companies.Remove(company);
-            await _context.SaveChangesAsync();
+
+            Company company = await _companyContext.companies.FindAsync(companyID);
+
+            company.Projects.ForEach(delegate (Project project) {
+
+                project.Tickets.ForEach(delegate (Ticket ticket) {
+
+                    // remove ticket reference from assignees
+                    User ticketAssignee = _userContext.users.Find(ticket.AssigneeID);
+                    ticketAssignee.AssignedTickets.Remove(ticket);
+
+                    // remove project reference from assignees
+                    ticketAssignee.AssignedProjects.Remove(project);
+                    ticket.ProjectID = null;
+
+                    // remove member references from project
+                    project.Members = null;
+
+                    // remove ticket references from project
+                    project.Tickets = null;
+
+                    // remove tickets from DB & save chagens
+                    this._ticketContext.tickets.Remove(ticket);
+                    this._ticketContext.SaveChanges();
+                });
+
+                // remove prject reference from user who created it
+                User projectCreator = _userContext.users.Find(project.CreatorID);
+                projectCreator.CreatedProjects.Remove(project);
+
+                // remove tickets from DB & save chagens
+                this._projectContext.projects.Remove(project);
+                this._projectContext.SaveChanges();
+            });
+
+            // remove company reference from user who created that company
+            User companyCreator = await _userContext.users.FindAsync(company.CreatorID);
+            companyCreator.Companies.Remove(company);
+            await _userContext.SaveChangesAsync();
+
+            // remove company from DB & save
+            _companyContext.companies.Remove(company);
+            await _companyContext.SaveChangesAsync();                     
 
             return NoContent();
         }
 
         // Remove project from company
-        // UPDATE: api/Company
+        // PUT: api/Company
         [HttpPut("{companyId/projectId}")]
-        public async Task<ActionResult<Company>> RemoveProject(string copmanyId, string projectId)
+        public ActionResult<Company> RemoveProject(string copmanyId, string projectId)
         {
-            // TODO: implemeted deleting Project entity from DB as well. Now it's just removing it from list I guess.
-
-            Company company = await _context.companies.FindAsync(copmanyId);
+            Company company = _companyContext.companies.Find(copmanyId);
             Project project = company.Projects.Find(proj => proj.ProjectID == projectId);
 
+            RemoveProjectMembers(project);
+            RemoveTicketsFromProjectCreator(project);
+            project.Members = null;
+            RemoveTicketFromProject(project);
+
             company.Projects.Remove(project);
-            await _context.SaveChangesAsync();
+            _companyContext.SaveChanges();
+
+            _projectContext.projects.Remove(project);
 
             return company;
         }
 
+        private void RemoveProjectMembers(Project project)
+        {
+            project.Members.ForEach(delegate (User member)
+            {
+                member.AssignedProjects.Remove(project);
+
+                member.AssignedTickets.ForEach(delegate (Ticket ticket) {
+                    if (ticket.ProjectID == project.ProjectID)
+                    {
+                        _ = member.AssignedTickets.Remove(ticket);
+                    }
+                });
+            });
+        }
+
+        private void RemoveTicketsFromProjectCreator(Project project)
+        {
+            User user = _userContext.users.Find(project.CreatorID);
+            user.CreatedTickets.ForEach(delegate (Ticket ticket) {
+                if (ticket.ProjectID == project.ProjectID)
+                {
+                    _ = user.CreatedTickets.Remove(ticket);
+                }
+            });
+
+            user.CreatedProjects.Remove(project);
+            _userContext.SaveChangesAsync();
+        }
+
+        private void RemoveTicketFromProject(Project project)
+        {
+            project.Tickets.ForEach(delegate (Ticket ticket) {
+                _ticketContext.tickets.Remove(ticket);
+            });
+
+            _ticketContext.SaveChangesAsync();
+
+            project.Tickets = null;
+        }
+
         // Change company data by its id
-        // DELETE: api/Company
+        // PUT: api/Company
         [HttpDelete("{id}")]
         public async Task<ActionResult> ChangeCompany(string companyID, Company newCompany)
         {
@@ -106,11 +214,11 @@ namespace GreenOnion.Server.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(newCompany).State = EntityState.Modified;
+            _companyContext.Entry(newCompany).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _companyContext.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -130,12 +238,12 @@ namespace GreenOnion.Server.Controllers
         // Get company by id
         // GET: api/Company
         [HttpGet("{id}")]
-        public async Task<ActionResult<Company>> GetCompanyById(string companyID) => await _context.companies.FindAsync(companyID);
+        public async Task<ActionResult<Company>> GetCompanyById(string companyID) => await _companyContext.companies.FindAsync(companyID);
 
 
         private bool CompanyExists(string id)
         {
-            return _context.companies.Any(e => e.CompanyID == id);
+            return _companyContext.companies.Any(e => e.CompanyID == id);
         }
     }
 }

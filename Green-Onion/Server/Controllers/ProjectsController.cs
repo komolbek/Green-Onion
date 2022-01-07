@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using GreenOnion.Server.DataLayer.DataAccess;
+using GreenOnion.Server.Datalayer.Dataaccess;
 using System.Linq;
 using System.Collections.Generic;
 
@@ -14,20 +15,34 @@ namespace GreenOnion.Server.Controllers
     {
 
         private readonly ProjectDbContext _context;
-        // TODO: add ticket context in order to remove ticket assignee from both ticket & project records
+        private readonly UserDbContext _userContext;
+        private readonly CompanyDbContext _companyContext;
+        private readonly TicketDbContext _ticketContext;
 
-        public ProjectsController(ProjectDbContext context)
+        public ProjectsController(ProjectDbContext context, UserDbContext userDbContext, CompanyDbContext companyContext, TicketDbContext ticketContext)
         {
             this._context = context;
+            this._userContext = userDbContext;
+            this._companyContext = companyContext; 
+            this._ticketContext = ticketContext; 
         }
 
         // Create a new project
         // POST: api/Project
         [HttpPost]
-        public async Task<ActionResult<Project>> CreateProject(Project project)
+        [Route("{creatorId}/{companyId}")]
+        public async Task<ActionResult<Project>> CreateProject(string creatorId, string companyId, Project project)
         {
             _context.projects.Add(project);
             await _context.SaveChangesAsync();
+
+            Company company = await _companyContext.companies.FindAsync(companyId);
+            company.Projects.Add(project);
+            await _companyContext.SaveChangesAsync();
+
+            User user = await _userContext.users.FindAsync(creatorId);
+            user.CreatedProjects.Add(project);
+            await _userContext.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetProjectById), new { id = project.ProjectID}, project);
         }
@@ -73,12 +88,15 @@ namespace GreenOnion.Server.Controllers
 
         // Add memeber to the project. Gets User & Project from DB by IDs, adds User to Project and saves Project records in the DB
         // PUT: api/Project
-        [HttpPut("{id}")]
+        [HttpPut("{projectId}")]
         public async Task<ActionResult<Project>> AddMember(string projId, User member)
         {
             Project project = await _context.projects.FindAsync(projId);
             project.Members.Add(member);
             await _context.SaveChangesAsync();
+
+            _userContext.users.Add(member);            
+            await _userContext.SaveChangesAsync();
 
             return project;
         }
@@ -105,12 +123,15 @@ namespace GreenOnion.Server.Controllers
 
         // Gets Ticket & Project from DB by IDs, adds Ticket to Project and saves Project records in the DB
         // PUT: api/Project
-        [HttpPut("{id}")]
+        [HttpPut("{projectId}")]
         public async Task<ActionResult<Project>> AddTicket(string projId, Ticket ticket)
         {
             Project project = await _context.projects.FindAsync(projId);
             project.Tickets.Add(ticket);
             await _context.SaveChangesAsync();
+
+            _ticketContext.tickets.Add(ticket);
+            await _ticketContext.SaveChangesAsync();
 
             return project;
         }
