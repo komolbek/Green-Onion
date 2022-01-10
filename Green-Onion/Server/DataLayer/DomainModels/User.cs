@@ -20,7 +20,7 @@ namespace GreenOnion.DomainModels
         private List<Project> createdProjects;
         private List<Ticket> createdTickets;
         private List<Project> assignedProjects;
-        private List<Ticket>? assignedTickets;
+        private List<Ticket> assignedTickets;
 
         public string UserID { get => userID; set => userID = value; }
         public string Username { get => username; set => username = value; }
@@ -31,7 +31,7 @@ namespace GreenOnion.DomainModels
         public List<Project> CreatedProjects { get => createdProjects; set => createdProjects = value; }
         public List<Ticket> CreatedTickets { get => createdTickets; set => createdTickets = value; }
         public List<Project> AssignedProjects { get => assignedProjects; set => assignedProjects = value; }
-        public List<Ticket>? AssignedTickets { get => assignedTickets; set => assignedTickets = value; }
+        public List<Ticket> AssignedTickets { get => assignedTickets; set => assignedTickets = value; }
         public string Password { get => password; set => password = value; }
     }
 }

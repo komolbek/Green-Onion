@@ -1,5 +1,4 @@
 ﻿using System;
-using GreenOnion.Services;
 
 namespace GreenOnion.DomainModels
 {
