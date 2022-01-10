@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GreenOnion.DomainModels
+namespace GreenOnion.Server.DataLayer.DomainModels
 {
     public class Ticket
     {

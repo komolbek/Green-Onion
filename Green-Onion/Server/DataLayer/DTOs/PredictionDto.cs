@@ -1,5 +1,6 @@
 ﻿using System;
-namespace GreenOnion.DomainModels
+
+namespace GreenOnion.Server.DataLayer.DTOs
 {
     public class PredictionDto
     {

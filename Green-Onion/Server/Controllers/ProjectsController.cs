@@ -1,9 +1,8 @@
-﻿using GreenOnion.DomainModels;
+﻿using GreenOnion.Server.DataLayer.DomainModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using GreenOnion.Server.DataLayer.DataAccess;
-using GreenOnion.Server.Datalayer.Dataaccess;
 using System.Linq;
 using System.Collections.Generic;
 

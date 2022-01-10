@@ -1,9 +1,7 @@
 ﻿using System;
-using GreenOnion.Services;
-using System.Collections;
 using System.Collections.Generic;
 
-namespace GreenOnion.DomainModels
+namespace GreenOnion.Server.DataLayer.DomainModels
 {
     public class Project
     {

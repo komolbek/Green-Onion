@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace GreenOnion.DomainModels
+namespace GreenOnion.Server.DataLayer.DomainModels
 {
     public class Company
     {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using GreenOnion.DomainModels;
+using GreenOnion.Server.DataLayer.DomainModels;
 
-namespace GreenOnion.Server.Datalayer.Dataaccess
+namespace GreenOnion.Server.DataLayer.DataAccess
 {
     public class UserDbContext : DbContext
     {

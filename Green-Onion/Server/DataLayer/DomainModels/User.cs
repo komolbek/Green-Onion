@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace GreenOnion.DomainModels
+namespace GreenOnion.Server.DataLayer.DomainModels
 {
     public class User
     {
@@ -12,11 +12,11 @@ namespace GreenOnion.DomainModels
 
         private string userID;
         private string username;
-        private string name;
+        private string firstName;
         private string lastName;
         private string aboutMe;
         private string password;
-        private List<Company>  companies;
+        private List<Company> companies;
         private List<Project> createdProjects;
         private List<Ticket> createdTickets;
         private List<Project> assignedProjects;
@@ -24,7 +24,7 @@ namespace GreenOnion.DomainModels
 
         public string UserID { get => userID; set => userID = value; }
         public string Username { get => username; set => username = value; }
-        public string Name { get => name; set => name = value; }
+        public string Name { get => firstName; set => firstName = value; }
         public string LastName { get => lastName; set => lastName = value; }
         public string AboutMe { get => aboutMe; set => aboutMe = value; }
         public List<Company> Companies { get => companies; set => companies = value; }

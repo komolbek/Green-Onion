@@ -20,8 +20,10 @@
 
   <ItemGroup>
     <None Remove="Models\" />
+    <None Remove="Networking\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\" />
+    <Folder Include="Networking\" />
   </ItemGroup>
 </Project>

@@ -3,8 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using System.Threading.Tasks;
 using GreenOnion.Server.DataLayer.DataAccess;
-using GreenOnion.Server.Datalayer.Dataaccess;
-using GreenOnion.DomainModels;
+using GreenOnion.Server.DataLayer.DomainModels;
 
 namespace GreenOnion.Server.Controllers
 {

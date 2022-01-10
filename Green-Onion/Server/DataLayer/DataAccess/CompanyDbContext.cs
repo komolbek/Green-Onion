@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using GreenOnion.DomainModels;
+using GreenOnion.Server.DataLayer.DomainModels;
 
 namespace GreenOnion.Server.DataLayer.DataAccess
 {

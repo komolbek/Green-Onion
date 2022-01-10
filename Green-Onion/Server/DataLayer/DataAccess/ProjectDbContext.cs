@@ -1,4 +1,4 @@
-﻿using GreenOnion.DomainModels;
+﻿using GreenOnion.Server.DataLayer.DomainModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace GreenOnion.Server.DataLayer.DataAccess

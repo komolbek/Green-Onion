@@ -1,11 +1,10 @@
-﻿using GreenOnion.DomainModels;
+﻿using GreenOnion.Server.DataLayer.DomainModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using GreenOnion.Server.DataLayer.DataAccess;
 using System.Linq;
 using System.Collections.Generic;
-using GreenOnion.Server.Datalayer.Dataaccess;
 
 namespace GreenOnion.Server.Controllers
 {
