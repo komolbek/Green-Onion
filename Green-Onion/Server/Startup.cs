@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Linq;
+using GreenOnion.Server;
+using Microsoft.EntityFrameworkCore;
 
 namespace Green_Onion.Server
 {
@@ -23,6 +24,13 @@ namespace Green_Onion.Server
 
             services.AddControllersWithViews();
             services.AddRazorPages();
+            services.AddDbContext<GreenOnionContext>(options =>
+                options.UseSqlite(Configuration.GetConnectionString("GreenOnionContext")));
+
+            services.AddControllersWithViews()
+                    .AddNewtonsoftJson(options =>
+                        options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

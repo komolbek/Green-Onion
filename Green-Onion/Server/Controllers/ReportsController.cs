@@ -4,34 +4,27 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using GreenOnion.Server.Enums;
 using GreenOnion.Server.DataLayer.DTOs;
-using GreenOnion.Server.DataLayer.DataAccess;
 
 namespace GreenOnion.Server.Controllers
 {
-    [Route("api/ReportsController")]
+    [Route("api/[controller]")]
     [ApiController]
     public class ReportsController : ControllerBase
     {
-        private readonly ProjectDbContext _projectContext;
-        private readonly CompanyDbContext _companyContext;
-        private readonly UserDbContext _userContext;
-        private readonly TicketDbContext _ticketContext;
+        private readonly GreenOnionContext _context;      
 
-        public ReportsController(ProjectDbContext projectContext, CompanyDbContext companyContext, UserDbContext userContext, TicketDbContext ticketContext)
+        public ReportsController(GreenOnionContext context)
         {
-            this._projectContext = projectContext;
-            this._companyContext = companyContext;
-            this._userContext = userContext;
-            this._ticketContext = ticketContext;
+            this._context = context;
         }
 
         // Returns closed Projects within selected date range
         // GET: api/Report
-        [HttpGet]
         [Route("{companyId}")]
+        [HttpGet]
         public async Task<ActionResult<List<Project>>> GetClosedProjects(string companyId, ProjectRange projectRange)
         {
-            Company company = await _companyContext.companies.FindAsync(companyId);
+            Company company = await _context.companies.FindAsync(companyId);
 
             List<Project> closedProjects = new List<Project>();
 
@@ -55,11 +48,11 @@ namespace GreenOnion.Server.Controllers
 
         // Returns closed tickets of all companyprojects within selected date range
         // GET: api/Report
-        [HttpGet]
         [Route("{companyId}")]
+        [HttpGet]        
         public async Task<ActionResult<List<Ticket>>> GetClosedTickets(string companyId, ProjectRange projectRange)
         {
-            Company company = await _companyContext.companies.FindAsync(companyId);
+            Company company = await _context.companies.FindAsync(companyId);
 
             List<Ticket> tickets = new List<Ticket>();
 
@@ -88,12 +81,12 @@ namespace GreenOnion.Server.Controllers
         //  Project 3: 15%}
         // It's a list of key value pairs. Where name is a key & progress is a value. O(n^2)
         // GET: api/Report
-        [HttpGet]
         [Route("{companyId}")]
+        [HttpGet]
         public async Task<ActionResult<Dictionary<string, string>>> GetProjectsProgress(string companyId)
         {
             // get company object
-            Company company = await _companyContext.companies.FindAsync(companyId);
+            Company company = await _context.companies.FindAsync(companyId);
 
             int numOfTickets = 0;
             int completedTickets = 0;
@@ -144,28 +137,28 @@ namespace GreenOnion.Server.Controllers
         {
             Dictionary<string, int> usersProductivity = new Dictionary<string, int>();
 
-            var project = await _projectContext.projects.FindAsync(projectID);
+            var project = await _context.projects.FindAsync(projectID);
 
             for (var i = 0; i < project.Tickets.Count; i++)
             {
                 if (project.Tickets[i].Status == TicketStatus.Done.ToString())
                 {
-                    if (project.Tickets[i].AssigneeID is null)
+                    if (project.Tickets[i].UserId is null)
                     {
                         continue;
                     }
                     else
                     {
-                        Ticket ticket = await _ticketContext.tickets.FindAsync(project.Tickets[i].TicketID);
-                        User assignee = await _userContext.users.FindAsync(ticket.AssigneeID);
+                        Ticket ticket = await _context.tickets.FindAsync(project.Tickets[i].TicketId);
+                        User assignee = await _context.users.FindAsync(ticket.UserId);
 
-                        if (usersProductivity.ContainsKey(assignee.Name))
+                        if (usersProductivity.ContainsKey(assignee.FirstName))
                         {
-                            usersProductivity[assignee.Name] = usersProductivity[assignee.Name] + 1;
+                            usersProductivity[assignee.FirstName] = usersProductivity[assignee.FirstName] + 1;
                         }
                         else
                         {
-                            usersProductivity.Add(assignee.Name, 1);
+                            usersProductivity.Add(assignee.FirstName, 1);
                         }
                     }
                 }

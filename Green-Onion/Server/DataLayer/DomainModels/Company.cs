@@ -1,23 +1,41 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GreenOnion.Server.DataLayer.DomainModels
 {
+    [Serializable]
     public class Company
     {
         public Company()
         {
         }
 
-        private string companyID;
-        private User creatorId;
+        [Key]
+        [Required]
+        private string companyId;
+
+        [Required]
+        [ForeignKey("User")]
+        private string userId;
+
+        [Required]
         private string name;
+
         private string aboutInfo;
+
+        // has many projects
         private List<Project> projects;
 
-        public string CompanyID { get => companyID; set => companyID = value; }
-        public User CreatorID { get => creatorId; set => creatorId = value; }
+        // has many employees
+        private List<User> employees;
+
+        public string CompanyId { get => companyId; set => companyId = value; }
+        public string UserId { get => userId; set => userId = value; }
         public string Name { get => name; set => name = value; }
         public string AboutInfo { get => aboutInfo; set => aboutInfo = value; }
         public List<Project> Projects { get => projects; set => projects = value; }
+        public List<User> Employees { get => employees; set => employees = value; }
     }
 }

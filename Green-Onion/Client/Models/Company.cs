@@ -2,9 +2,9 @@
 
 namespace GreenOnion.Client.Models
 {
-    public class Comapany
+    public class Company
     {
-        public Comapany()
+        public Company()
         {
         }
 

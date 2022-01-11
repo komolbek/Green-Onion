@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace GreenOnion.Server.DataLayer.DomainModels
 {
@@ -10,28 +11,34 @@ namespace GreenOnion.Server.DataLayer.DomainModels
             //this.password = password;
         }
 
-        private string userID;
+        [Key]
+        [Required]
+        private string userId;
+
+        public string projectId { get; set; }
+
+        public string companyId { get; set; }
+
+        private List<Ticket> tickets;
+
+        [Required]
         private string username;
+
+        [Required]
         private string firstName;
+
         private string lastName;
         private string aboutMe;
-        private string password;
-        private List<Company> companies;
-        private List<Project> createdProjects;
-        private List<Ticket> createdTickets;
-        private List<Project> assignedProjects;
-        private List<Ticket> assignedTickets;
 
-        public string UserID { get => userID; set => userID = value; }
+        [Required]
+        private string password;
+
+        public string UserId { get => userId; set => userId = value; }
         public string Username { get => username; set => username = value; }
-        public string Name { get => firstName; set => firstName = value; }
+        public string FirstName { get => firstName; set => firstName = value; }
         public string LastName { get => lastName; set => lastName = value; }
         public string AboutMe { get => aboutMe; set => aboutMe = value; }
-        public List<Company> Companies { get => companies; set => companies = value; }
-        public List<Project> CreatedProjects { get => createdProjects; set => createdProjects = value; }
-        public List<Ticket> CreatedTickets { get => createdTickets; set => createdTickets = value; }
-        public List<Project> AssignedProjects { get => assignedProjects; set => assignedProjects = value; }
-        public List<Ticket> AssignedTickets { get => assignedTickets; set => assignedTickets = value; }
         public string Password { get => password; set => password = value; }
+        public List<Ticket> Tickets { get => tickets; set => tickets = value; }
     }
 }
