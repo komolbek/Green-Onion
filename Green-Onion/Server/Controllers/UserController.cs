@@ -1,8 +1,7 @@
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using GreenOnion.Server.DataLayer.DataMappers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using GreenOnion.Server;
 using GreenOnion.Server.DataLayer.DomainModels;
 using GreenOnion.Server.DataLayer.DataAccess;
 using GreenOnion.Server.DataLayer.RequestModels;
@@ -15,11 +14,13 @@ namespace Green_Onion.Server.Controllers
     {
         private readonly UserDataAccess _userDataAccess;
         private readonly UserAccountDataAccess _userAccountDataAccess;
+        private readonly UserDataMapper _userDataMapper;
 
-        public UserController(UserDataAccess userDataAccess, UserAccountDataAccess userAccountDataAccess)
+        public UserController(UserDataAccess userDataAccess, UserAccountDataAccess userAccountDataAccess, UserDataMapper userDataMapper)
         {
             _userDataAccess = userDataAccess;
             _userAccountDataAccess = userAccountDataAccess;
+            _userDataMapper = userDataMapper;
         }
 
         // GET: api/User
@@ -95,14 +96,8 @@ namespace Green_Onion.Server.Controllers
         [HttpPost]
         public ActionResult<User> PostUser(UserSignUpRequest signUpRequest)
         {
-            var user = new User();
-            user.firstName = signUpRequest.firstName;
-            user.userId = signUpRequest.userId;
-
-            var userAccount = new UserAccount();
-            userAccount.username = signUpRequest.username;
-            userAccount.password = signUpRequest.password;
-            userAccount.userId = signUpRequest.userId;
+            var user = _userDataMapper.MapSignUpRequestToUser(signUpRequest);
+            var userAccount = _userDataMapper.MapSignUpRequestToUserAccount(signUpRequest);
 
             try
             {

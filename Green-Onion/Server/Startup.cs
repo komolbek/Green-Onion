@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using GreenOnion.Server;
 using Microsoft.EntityFrameworkCore;
+using GreenOnion.Server.DataLayer.DataMappers;
 using GreenOnion.Server.DataLayer.DataAccess;
 
 namespace Green_Onion.Server
@@ -29,6 +30,7 @@ namespace Green_Onion.Server
             // custom data access classes DI
             services.AddTransient<UserAccountDataAccess>();
             services.AddTransient<UserDataAccess>();
+            services.AddTransient<UserDataMapper>();
 
             // DbContext DI
             services.AddDbContext<GreenOnionContext>(options =>
