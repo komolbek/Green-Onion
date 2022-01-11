@@ -5,7 +5,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GreenOnion.Server.DataLayer.DomainModels
 {
-    [Serializable]
     public class Company
     {
         public Company()

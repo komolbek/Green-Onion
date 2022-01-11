@@ -1,2 +1,40 @@
-<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="/Users/komolbekibragimov/Desktop/Projects/Green-Onion/GreenOnion.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="928"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,4:mainUser"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="Project" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort><column index="1" mode="0"/></sort><column_widths><column index="1" value="55"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="User" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort><column index="2" mode="0"/></sort><column_widths><column index="1" value="345"/><column index="2" value="269"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1">SELECT * FROM User
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="/Users/komolbekibragimov/Desktop/Projects/Green-Onion/GreenOnion.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="1788"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,14:mainProject_member"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="Company" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="66"/><column index="2" value="38"/><column index="3" value="41"/><column index="4" value="58"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="Company_employee" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="66"/><column index="2" value="41"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="Project" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort><column index="2" mode="0"/></sort><column_widths><column index="1" value="158"/><column index="2" value="173"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="Project_member" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="55"/><column index="2" value="41"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="User" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="172"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="User_account" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="63"/><column index="2" value="59"/><column index="3" value="41"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1">-- INSERT INTO User(userId, firstName, lastName, aboutMeInfo,  jobPosition)
+-- VALUES(1,&quot;Kamol&quot;,NULL, NULL,NULL)
+
+-- INSERT into User_account(username,password,userId)
+-- VALUES(&quot;vladmusuz&quot;,&quot;9964&quot;,1)
+
+-- UPDATE User_account
+-- SET password=&quot;1234&quot;
+
+-- INSERT INTO User(userId, firstName)
+-- VALUES(2, &quot;Abbos&quot;)
+
+</sql><sql name="SQL 2">-- SELECT userId FROM User_account
+-- WHERE username = &quot;vladmusuz&quot; 
+-- AND password = &quot;9964&quot;
+
+-- SELECT comp FROM Company_employee
+-- WHERE companyId = 1;
+</sql><sql name="SQL 3">-- INSERT INTO Company(companyId, name, userId, aboutInfo)
+-- VALUES(1, &quot;apple&quot;, 1, NULL)
+
+-- INSERT INTO Company_employee(companyId, userId)
+-- VALUES(1, 1)
+
+-- INSERT INTO Company_employee(companyId, userId)
+-- VALUES(1, 2)</sql><sql name="SQL 5">-- INSERT INTO Project(projectId, name, companyId, userId, startedDate)
+-- VALUES(2, &quot;CoreData features dev&quot;, 1, 2, &quot;15/11/2019&quot;)
+
+-- 
+-- INSERT INTO Project_member(projectId, userId)
+-- VALUES(2, 2)
+
+-- search all projects of company 
+
+-- search projects related to specific user by his id
+-- SELECT projectId FROM Project_member
+-- WHERE userId = 2
+
+SELECT projectId = 1, projectId = 2 FROM  Project 
 </sql><current_tab id="0"/></tab_sql></sqlb_project>

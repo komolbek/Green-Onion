@@ -24,14 +24,7 @@ namespace GreenOnion.Server.DataLayer.DomainModels
 
         [Required]
         [ForeignKey("User"), Column(Order = 1)]
-        private string userId;              
-
-        // Has many
-        private List<Ticket> tickets;
-
-        // Has many
-        [Required]
-        private List<User> members;
+        private string userId;     
 
         [Required]
         private string name;
@@ -46,10 +39,8 @@ namespace GreenOnion.Server.DataLayer.DomainModels
         public string CompanyId { get => companyId; set => companyId = value; }
         public string UserId { get => userId; set => userId = value; }
         public string Name { get => name; set => name = value; }
-        public List<Ticket> Tickets { get => tickets; set => tickets = value; }
         public DateTime StartedDate { get => startedDate; set => startedDate = value; }
         public DateTime ClosedDate { get => closedDate; set => closedDate = value; }
         public DateTime DueDate { get => dueDate; set => dueDate = value; }
-        public List<User> Members { get => members; set => members = value; }
     }
 }
