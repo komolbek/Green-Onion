@@ -50,7 +50,7 @@ namespace Green_Onion.Server.Controllers
         [HttpPut]
         public async Task<IActionResult> PutProject(string id, Project project)
         {
-            if (id != project.ProjectId)
+            if (id != project.projectId)
             {
                 return BadRequest();
             }
@@ -87,7 +87,7 @@ namespace Green_Onion.Server.Controllers
             }
             catch (DbUpdateException)
             {
-                if (ProjectExists(project.ProjectId))
+                if (ProjectExists(project.projectId))
                 {
                     return Conflict();
                 }
@@ -97,7 +97,7 @@ namespace Green_Onion.Server.Controllers
                 }
             }
 
-            return CreatedAtAction("GetProject", new { id = project.ProjectId }, project);
+            return CreatedAtAction("GetProject", new { id = project.projectId }, project);
         }
 
         // DELETE: api/Project/5
@@ -119,7 +119,7 @@ namespace Green_Onion.Server.Controllers
 
         private bool ProjectExists(string id)
         {
-            return _context.projects.Any(e => e.ProjectId == id);
+            return _context.projects.Any(e => e.projectId == id);
         }
 
         // GET: api/Project
@@ -263,7 +263,7 @@ namespace Green_Onion.Server.Controllers
             Project project = await _context.projects.FindAsync(projectId);
             Ticket ticket = project.Tickets.Find(_tickId => _tickId.TicketId == ticketId);
 
-            ticket.Status = newTicketStatus;
+            ticket.status = newTicketStatus;
             await _context.SaveChangesAsync();
 
             return FilterProjectTicketsByStatus(project);
@@ -276,11 +276,11 @@ namespace Green_Onion.Server.Controllers
 
             foreach (Ticket ticket in project.Tickets)
             {
-                if (ticket.Status == "todo")
+                if (ticket.status == "todo")
                 {
                     filteredTicketsByProjectLists["todo"].Add(ticket);
                 }
-                else if (ticket.Status == "doing")
+                else if (ticket.status == "doing")
                 {
                     filteredTicketsByProjectLists["doing"].Add(ticket);
                 }

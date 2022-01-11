@@ -1,4 +1,6 @@
-﻿using System;
+﻿using GreenOnion.Server.DataLayer.DomainModels;
+using System.Collections.Generic;
+
 namespace GreenOnion.Server.DataLayer.DTOs
 {
     public class UserDto
@@ -7,8 +9,6 @@ namespace GreenOnion.Server.DataLayer.DTOs
         {
         }
 
-        [Key]
-        [Required]
         private string userId;
 
         public string projectId { get; set; }
@@ -17,16 +17,13 @@ namespace GreenOnion.Server.DataLayer.DTOs
 
         private List<Ticket> tickets;
 
-        [Required]
         private string username;
 
-        [Required]
         private string firstName;
 
         private string lastName;
         private string aboutMe;
 
-        [Required]
         private string password;
 
         public string UserId { get => userId; set => userId = value; }

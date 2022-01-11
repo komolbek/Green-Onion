@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace GreenOnion.Server.DataLayer.DomainModels
 {
@@ -13,18 +12,15 @@ namespace GreenOnion.Server.DataLayer.DomainModels
 
         [Key]
         [Required]
-        private string userId;
+        public string userId { get; set; }
 
         [Required]
-        private string firstName;
+        public string firstName { get; set; }
 
-        private string lastName;
+        public string lastName { get; set; }
 
-        private string aboutMe;
+        public string aboutMe { get; set; }
 
-        public string UserId { get => userId; set => userId = value; }
-        public string FirstName { get => firstName; set => firstName = value; }
-        public string LastName { get => lastName; set => lastName = value; }
-        public string AboutMe { get => aboutMe; set => aboutMe = value; }
+        public string jobPosition { get; set; }
     }
 }

@@ -47,7 +47,7 @@ namespace Green_Onion.Server.Controllers
         [HttpPut]
         public async Task<ActionResult<User>> PutUser(string id, User newUser)
         {
-            if (id != newUser.UserId)
+            if (id != newUser.userId)
             {
                 return BadRequest();
             }
@@ -108,7 +108,7 @@ namespace Green_Onion.Server.Controllers
             }
             catch (DbUpdateException)
             {
-                if (UserExists(user.UserId))
+                if (UserExists(user.userId))
                 {
                     return Conflict();
                 }
@@ -118,7 +118,7 @@ namespace Green_Onion.Server.Controllers
                 }
             }
 
-            return CreatedAtAction("GetUser", new { id = user.UserId }, user);
+            return CreatedAtAction("GetUser", new { id = user.userId }, user);
         }
 
         // DELETE: api/User/5
@@ -140,7 +140,7 @@ namespace Green_Onion.Server.Controllers
 
         private bool UserExists(string id)
         {
-            return _context.users.Any(e => e.UserId == id);
+            return _context.users.Any(e => e.userId == id);
         }
     }
 }

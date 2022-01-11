@@ -24,7 +24,7 @@ namespace GreenOnion.Server.Controllers
         public async Task<ActionResult<Ticket>> ChangeTicket(string ticketId, Ticket newTicket)
         {
 
-            if (ticketId != newTicket.TicketId)
+            if (ticketId != newTicket.ticketId)
             {
                 return BadRequest();
             }
@@ -62,7 +62,7 @@ namespace GreenOnion.Server.Controllers
         public async Task<ActionResult<User>> GetAssignee(string ticketID)
         {
             Ticket ticket = await _context.tickets.FindAsync(ticketID);
-            User ticketAssignee = await _context.users.FindAsync(ticket.UserId);
+            User ticketAssignee = await _context.users.FindAsync(ticket.userId);
 
             return ticketAssignee;
         }
@@ -74,9 +74,9 @@ namespace GreenOnion.Server.Controllers
         public async Task<ActionResult<Ticket>> AssignUser(string ticketId, string assigneeId)
         {
             Ticket ticket = await _context.tickets.FindAsync(ticketId);
-            User ticketAssignee = await _context.users.FindAsync(ticket.UserId);
+            User ticketAssignee = await _context.users.FindAsync(ticket.userId);
 
-            ticket.UserId = assigneeId;
+            ticket.userId = assigneeId;
             _context.users.Add(ticketAssignee);
 
             await _context.SaveChangesAsync();
@@ -91,9 +91,9 @@ namespace GreenOnion.Server.Controllers
         public async Task<ActionResult<Ticket>> RemoveAssignee(string ticketId)
         {
             Ticket ticket = await _context.tickets.FindAsync(ticketId);
-            User ticketAssignee = await _context.users.FindAsync(ticket.UserId);
+            User ticketAssignee = await _context.users.FindAsync(ticket.userId);
 
-            ticket.UserId = null;
+            ticket.userId = null;
             ticketAssignee.Tickets.Remove(ticket);
 
             await _context.SaveChangesAsync();
@@ -103,7 +103,7 @@ namespace GreenOnion.Server.Controllers
 
         private bool TicketExists(string id)
         {
-            return _context.tickets.Any(e => e.TicketId == id);
+            return _context.tickets.Any(e => e.ticketId == id);
         }
     }
 }

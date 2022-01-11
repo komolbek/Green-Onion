@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GreenOnion.Server.DataLayer.DomainModels
@@ -12,35 +10,27 @@ namespace GreenOnion.Server.DataLayer.DomainModels
 
         }
 
-        // Primary keys
         [Key]
         [Required]
-        private string projectId;
+        public string projectId { get; set; }
 
-        // Foreign keys
+        // Indicates the company in which the project is created. 1 to N.
         [Required]
-        [ForeignKey("Company"), Column(Order = 0)]
-        private string companyId;
+        [ForeignKey("Company"), Column(Order = 2)]
+        public string companyId { get; set; }
 
+        // Indicates the user who created the project. Thus that user can delete, change the project & add members. 1 to M
         [Required]
-        [ForeignKey("User"), Column(Order = 1)]
-        private string userId;     
-
-        [Required]
-        private string name;
+        [ForeignKey("User"), Column(Order = 3)]
+        public string userId { get; set; }
 
         [Required]
-        private DateTime startedDate;
+        public string name { get; set; }
 
-        private DateTime closedDate;
-        private DateTime dueDate;        
+        [Required]
+        public string startedDate { get; set; }
 
-        public string ProjectId { get => projectId; set => projectId = value; }
-        public string CompanyId { get => companyId; set => companyId = value; }
-        public string UserId { get => userId; set => userId = value; }
-        public string Name { get => name; set => name = value; }
-        public DateTime StartedDate { get => startedDate; set => startedDate = value; }
-        public DateTime ClosedDate { get => closedDate; set => closedDate = value; }
-        public DateTime DueDate { get => dueDate; set => dueDate = value; }
+        public string closedDate { get; set; }
+        public string dueDate { get; set; }
     }
 }

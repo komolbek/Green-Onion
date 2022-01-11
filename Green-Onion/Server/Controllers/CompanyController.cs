@@ -53,7 +53,7 @@ namespace Green_Onion.Server.Controllers
         [HttpPut]
         public async Task<IActionResult> PutCompany(string id, Company company)
         {
-            if (id != company.CompanyId)
+            if (id != company.companyId)
             {
                 return BadRequest();
             }
@@ -105,9 +105,9 @@ namespace Green_Onion.Server.Controllers
         public async Task<ActionResult<Company>> PostCompany(Company company)
         {
             _context.companies.Add(company);
-            User user = _context.users.Find(company.UserId);
+            User user = _context.users.Find(company.userId);
 
-            user.companyId = company.CompanyId;
+            user.companyId = company.companyId;
 
             company.Employees.Add(user);
 
@@ -117,7 +117,7 @@ namespace Green_Onion.Server.Controllers
             }
             catch (DbUpdateException)
             {
-                if (CompanyExists(company.CompanyId))
+                if (CompanyExists(company.companyId))
                 {
                     return Conflict();
                 }
@@ -127,12 +127,12 @@ namespace Green_Onion.Server.Controllers
                 }
             }
 
-            return CreatedAtAction(nameof(GetCompany), new { id = company.CompanyId }, company);
+            return CreatedAtAction(nameof(GetCompany), new { id = company.companyId }, company);
         }
 
         private bool CompanyExists(string id)
         {
-            return _context.companies.Any(e => e.CompanyId == id);
+            return _context.companies.Any(e => e.companyId == id);
         }
 
         // Add employee into the company
@@ -210,7 +210,7 @@ namespace Green_Onion.Server.Controllers
             project.Members.ForEach(delegate (User member)
             {
                 member.Tickets.ForEach(delegate (Ticket ticket) {
-                    if (ticket.ProjectId == project.ProjectId)
+                    if (ticket.projectId == project.projectId)
                     {
                         _ = member.Tickets.Remove(ticket);
                     }

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GreenOnion.Server.DataLayer.DomainModels
@@ -13,28 +11,15 @@ namespace GreenOnion.Server.DataLayer.DomainModels
 
         [Key]
         [Required]
-        private string companyId;
+        public string companyId { get; set; }
 
         [Required]
-        [ForeignKey("User")]
-        private string userId;
+        public string name { get; set; }
 
         [Required]
-        private string name;
+        [ForeignKey("User"), Column(Order = 2)]
+        public string userId { get; set; }
 
-        private string aboutInfo;
-
-        // has many projects
-        private List<Project> projects;
-
-        // has many employees
-        private List<User> employees;
-
-        public string CompanyId { get => companyId; set => companyId = value; }
-        public string UserId { get => userId; set => userId = value; }
-        public string Name { get => name; set => name = value; }
-        public string AboutInfo { get => aboutInfo; set => aboutInfo = value; }
-        public List<Project> Projects { get => projects; set => projects = value; }
-        public List<User> Employees { get => employees; set => employees = value; }
+        public string aboutInfo { get; set; }
     }
 }

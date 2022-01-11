@@ -30,7 +30,7 @@ namespace GreenOnion.Server.Controllers
 
             company.Projects.ForEach(delegate (Project project)
             {
-                if (project.ClosedDate >= projectRange.StartDate || project.ClosedDate <= projectRange.EndDate)
+                if (project.closedDate >= projectRange.StartDate || project.closedDate <= projectRange.EndDate)
                 {
                     closedProjects.Add(project);
                 }
@@ -58,7 +58,7 @@ namespace GreenOnion.Server.Controllers
 
             company.Projects.ForEach(delegate (Project project) {
                 project.Tickets.ForEach(delegate (Ticket ticket) {
-                    if (ticket.ClosedDate >= projectRange.StartDate || ticket.ClosedDate <= projectRange.EndDate)
+                    if (ticket.closedDate >= projectRange.StartDate || ticket.closedDate <= projectRange.EndDate)
                     {
                         tickets.Add(ticket);
                     }
@@ -98,11 +98,11 @@ namespace GreenOnion.Server.Controllers
             company.Projects.ForEach(delegate (Project project)
             {
                 numOfTickets = project.Tickets.Count;
-                projectName = project.Name;
+                projectName = project.name;
 
                 project.Tickets.ForEach(delegate (Ticket ticket)
                 {
-                    if (ticket.Status == TicketStatus.Done.ToString())
+                    if (ticket.status == TicketStatus.Done.ToString())
                     {
                         completedTickets += 1;
                     }
@@ -150,15 +150,15 @@ namespace GreenOnion.Server.Controllers
                     else
                     {
                         Ticket ticket = await _context.tickets.FindAsync(project.Tickets[i].TicketId);
-                        User assignee = await _context.users.FindAsync(ticket.UserId);
+                        User assignee = await _context.users.FindAsync(ticket.userId);
 
-                        if (usersProductivity.ContainsKey(assignee.FirstName))
+                        if (usersProductivity.ContainsKey(assignee.firstName))
                         {
-                            usersProductivity[assignee.FirstName] = usersProductivity[assignee.FirstName] + 1;
+                            usersProductivity[assignee.firstName] = usersProductivity[assignee.firstName] + 1;
                         }
                         else
                         {
-                            usersProductivity.Add(assignee.FirstName, 1);
+                            usersProductivity.Add(assignee.firstName, 1);
                         }
                     }
                 }

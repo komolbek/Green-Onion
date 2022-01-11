@@ -53,7 +53,7 @@ namespace GreenOnion.Server
 
             company.Projects.ForEach(delegate (Project project)
             {
-                int projectDuration = (int)(project.ClosedDate - project.StartedDate).TotalDays + 2;
+                int projectDuration = (int)(project.closedDate - project.startedDate).TotalDays + 2;
                 totalDays += projectDuration;
             });
 
@@ -70,11 +70,11 @@ namespace GreenOnion.Server
 
             project.Tickets.ForEach(delegate (Ticket ticket)
             {
-                if (ticket.Complexity == TicketComplexity.Easy.ToString())
+                if (ticket.complexity == TicketComplexity.Easy.ToString())
                 {
                     daysSum += 2;
                 }
-                else if (ticket.Complexity == TicketComplexity.Hard.ToString())
+                else if (ticket.complexity == TicketComplexity.Hard.ToString())
                 {
                     daysSum += 4;
                 }

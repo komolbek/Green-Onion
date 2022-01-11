@@ -44,7 +44,7 @@ namespace Green_Onion.Server.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTicket(string id, Ticket ticket)
         {
-            if (id != ticket.TicketId)
+            if (id != ticket.ticketId)
             {
                 return BadRequest();
             }
@@ -81,7 +81,7 @@ namespace Green_Onion.Server.Controllers
             }
             catch (DbUpdateException)
             {
-                if (TicketExists(ticket.TicketId))
+                if (TicketExists(ticket.ticketId))
                 {
                     return Conflict();
                 }
@@ -91,7 +91,7 @@ namespace Green_Onion.Server.Controllers
                 }
             }
 
-            return CreatedAtAction("GetTicket", new { id = ticket.TicketId }, ticket);
+            return CreatedAtAction("GetTicket", new { id = ticket.ticketId }, ticket);
         }
 
         // DELETE: api/Ticket/5
@@ -112,7 +112,7 @@ namespace Green_Onion.Server.Controllers
 
         private bool TicketExists(string id)
         {
-            return _context.tickets.Any(e => e.TicketId == id);
+            return _context.tickets.Any(e => e.ticketId == id);
         }
     }
 }
