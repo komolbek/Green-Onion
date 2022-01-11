@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Collections.Generic;
+
 namespace GreenOnion.Server.DataLayer.DTOs
 {
     public class CompanyDto
@@ -7,30 +8,16 @@ namespace GreenOnion.Server.DataLayer.DTOs
         {
         }
 
-        [Key]
-        [Required]
-        private string companyId;
+        public string companyId { get; set; }
 
-        [Required]
-        [ForeignKey("User")]
-        private string userId;
+        public UserDto creator { get; set; }
 
-        [Required]
-        private string name;
+        public string name { get; set; }
 
-        private string aboutInfo;
+        public string aboutInfo { get; set; }
 
-        // has many projects
-        private List<Project> projects;
+        public List<ProjectDto> projects { get; set; }
 
-        // has many employees
-        private List<User> employees;
-
-        public string CompanyId { get => companyId; set => companyId = value; }
-        public string UserId { get => userId; set => userId = value; }
-        public string Name { get => name; set => name = value; }
-        public string AboutInfo { get => aboutInfo; set => aboutInfo = value; }
-        public List<Project> Projects { get => projects; set => projects = value; }
-        public List<User> Employees { get => employees; set => employees = value; }
+        public List<UserDto> employees { get; set; }
     }
 }

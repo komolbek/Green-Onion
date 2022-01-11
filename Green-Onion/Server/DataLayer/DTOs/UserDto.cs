@@ -1,5 +1,4 @@
-﻿using GreenOnion.Server.DataLayer.DomainModels;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace GreenOnion.Server.DataLayer.DTOs
 {
@@ -7,31 +6,29 @@ namespace GreenOnion.Server.DataLayer.DTOs
     {
         public UserDto()
         {
+
         }
 
-        private string userId;
+        public string userId { get; set; }
 
-        public string projectId { get; set; }
+        public List<ProjectDto> createdProjects { get; set; }
 
-        public string companyId { get; set; }
+        public List<ProjectDto> addedProjects { get; set; }
 
-        private List<Ticket> tickets;
+        public CompanyDto company { get; set; }
 
-        private string username;
+        public List<TicketDto> createdTickets { get; set; }
 
-        private string firstName;
+        public List<TicketDto> assignedTickets { get; set; }
 
-        private string lastName;
-        private string aboutMe;
+        public string username { get; set; }
 
-        private string password;
+        public string firstName { get; set; }
 
-        public string UserId { get => userId; set => userId = value; }
-        public string Username { get => username; set => username = value; }
-        public string FirstName { get => firstName; set => firstName = value; }
-        public string LastName { get => lastName; set => lastName = value; }
-        public string AboutMe { get => aboutMe; set => aboutMe = value; }
-        public string Password { get => password; set => password = value; }
-        public List<Ticket> Tickets { get => tickets; set => tickets = value; }
+        public string lastName { get; set; }
+
+        public string aboutMe { get; set; }
+
+        public string jobPosition { get; set; }
     }
 }

@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System;
-using GreenOnion.Server.DataLayer.DomainModels;
 
 namespace GreenOnion.Server.DataLayer.DTOs
 {
@@ -8,23 +6,25 @@ namespace GreenOnion.Server.DataLayer.DTOs
     {
         public ProjectDto()
         {
+
         }
 
-        private string projectId;
+        public string projectId { get; set; }
 
-        private string companyId;
+        public CompanyDto company { get; set; }
 
-        private string userId;
+        public UserDto creator { get; set; }
 
-        private List<Ticket> tickets;
+        public string name { get; set; }
 
-        private List<User> members;
+        public List<UserDto> members { get; set; }        
 
-        private string name;
+        public List<TicketDto> tickets { get; set; }
 
-        private DateTime startedDate;
+        public string startedDate { get; set; }
 
-        private DateTime closedDate;
-        private DateTime dueDate;
+        public string closedDate { get; set; }
+
+        public string dueDate { get; set; }
     }
 }

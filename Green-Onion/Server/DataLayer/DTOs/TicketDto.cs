@@ -7,45 +7,27 @@ namespace GreenOnion.Server.DataLayer.DTOs
         {
         }
 
-        [Key]
-        [Required]
-        private string ticketId;
+        public string ticketId { get; set; }
 
-        [Required]
-        [ForeignKey("User"), Column(Order = 0)]
-        private string projectIt;
+        public ProjectDto project { get; set; }
 
-        [Required]
-        [ForeignKey("User"), Column(Order = 1)]
-        private string userId;
+        public UserDto creator { get; set; }
 
-        [Required]
-        private string name;
+        public UserDto assignee { get; set; }
 
-        private string status;
-        private string description;
-        private string complexity;
+        public string name { get; set; }
 
-        [Required]
-        private DateTime startedDate;
+        public string status { get; set; }
 
-        private DateTime closedDate;
-        private DateTime dueDate;
+        public string description { get; set; }
 
-        public string TicketId { get => ticketId; set => ticketId = value; }
-        public string ProjectId { get => projectIt; set => projectIt = value; }
-        public string Name { get => name; set => name = value; }
-        public string Status { get => status; set => status = value; }
-        public string Description { get => description; set => description = value; }
-        public DateTime StartedDate { get => startedDate; set => startedDate = value; }
-        public DateTime ClosedDate { get => closedDate; set => closedDate = value; }
-        public DateTime DueDate { get => dueDate; set => dueDate = value; }
-        public string UserId { get => userId; set => userId = value; }
-        public string Complexity { get => complexity; set => complexity = value; }
+        public string complexity { get; set; }
 
-        public Ticket()
-        {
+        public string startedDate { get; set; }
 
-        }
+        public string closedDate { get; set; }
+
+        public string dueDate { get; set; }
+
     }
 }
