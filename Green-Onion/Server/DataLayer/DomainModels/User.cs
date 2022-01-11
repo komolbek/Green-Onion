@@ -19,7 +19,7 @@ namespace GreenOnion.Server.DataLayer.DomainModels
 
         public string lastName { get; set; }
 
-        public string aboutMe { get; set; }
+        public string aboutMeInfo { get; set; }
 
         public string jobPosition { get; set; }
     }

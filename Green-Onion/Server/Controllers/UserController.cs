@@ -1,10 +1,11 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GreenOnion.Server;
 using GreenOnion.Server.DataLayer.DomainModels;
+using GreenOnion.Server.DataLayer.DataAccess;
+using GreenOnion.Server.DataLayer.RequestModels;
 
 namespace Green_Onion.Server.Controllers
 {
@@ -12,27 +13,28 @@ namespace Green_Onion.Server.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly GreenOnionContext _context;
+        private readonly UserDataAccess _userDataAccess;
+        private readonly UserAccountDataAccess _userAccountDataAccess;
 
-        public UserController(GreenOnionContext context)
+        public UserController(UserDataAccess userDataAccess, UserAccountDataAccess userAccountDataAccess)
         {
-            _context = context;
+            _userDataAccess = userDataAccess;
+            _userAccountDataAccess = userAccountDataAccess;
         }
 
         // GET: api/User
-        [Route("all")]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> Getusers()
+        public IEnumerable<User> GetUsers()
         {
-            return await _context.users.ToListAsync();
+            return _userDataAccess.SelectAll();
         }
 
-        // GET: api/User/5
-        [Route("getById/{id}")]
+        // GET: api/User/getUser/id/5
+        [Route("getUser/id/{id}")]
         [HttpGet]
-        public async Task<ActionResult<User>> GetUser(string id)
+        public ActionResult<User> GetUser(string id)
         {
-            var user = await _context.users.FindAsync(id);
+            var user = _userDataAccess.Select(id);
 
             if (user == null)
             {
@@ -42,105 +44,78 @@ namespace Green_Onion.Server.Controllers
             return user;
         }
 
-        // PUT: api/User/5
-        [Route("changeById/{id}")]
+        // PUT: api/User/changeUser/id/1
+        [Route("changeUser/id/{id}")]
         [HttpPut]
-        public async Task<ActionResult<User>> PutUser(string id, User newUser)
+        public ActionResult<User> PutUser(string id, User newUserData)
         {
-            if (id != newUser.userId)
+            if (id != newUserData.userId)
             {
                 return BadRequest();
             }
 
-            _context.Entry(newUser).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
+                return _userDataAccess.Update(id, newUserData);
+                
+            } catch (DbUpdateException)
             {
-                if (!UserExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
-
-            return await _context.users.FindAsync(id);
         }
 
-        // Get user by username
-        // GET: api/users
-        [Route("login")]
+        // Get user by username & password
+        // GET: api/User/signin
+        [Route("signin")]
         [HttpGet]
-        public async Task<ActionResult<User>> LoginUser(string username, string password)
+        public ActionResult<User> LoginUser(UserSignInRequest signInRequest)
         {
-            User user = new User();
+            var userId = _userAccountDataAccess.Select(signInRequest.username, signInRequest.password);
 
-            await _context.users.ForEachAsync(delegate (User _user)
+            if (userId is "" || userId is null)
             {
-                if (_user.Username.Equals(username)) {
-                    user = _user;
-                }
-            });
+                return BadRequest();
+            }
+
+            var user = _userDataAccess.Select(userId);
 
             if (user is not null)
             {
                 return user;
+
             } else
             {
                 return NoContent();
             }            
         }
 
+        // Used while registration. Creates User object & associated UserAccount object
+        // that can be used after loggin out.
         // POST: api/User
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        public ActionResult<User> PostUser(UserSignUpRequest signUpRequest)
         {
-            _context.users.Add(user);
+            var user = new User();
+            user.firstName = signUpRequest.firstName;
+            user.userId = signUpRequest.userId;
+
+            var userAccount = new UserAccount();
+            userAccount.username = signUpRequest.username;
+            userAccount.password = signUpRequest.password;
+            userAccount.userId = signUpRequest.userId;
+
             try
             {
-                await _context.SaveChangesAsync();
+                _userDataAccess.Insert(user);
+
+                _userAccountDataAccess.Insert(userAccount);
             }
             catch (DbUpdateException)
             {
-                if (UserExists(user.userId))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
+                throw;
             }
 
-            return CreatedAtAction("GetUser", new { id = user.userId }, user);
-        }
-
-        // DELETE: api/User/5
-        [Route("deleteById/{id}")]
-        [HttpDelete]
-        public async Task<IActionResult> DeleteUser(string id)
-        {
-            var user = await _context.users.FindAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            _context.users.Remove(user);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool UserExists(string id)
-        {
-            return _context.users.Any(e => e.userId == id);
-        }
+            return CreatedAtAction(nameof(GetUser), new { id = user.userId }, user);
+        }        
     }
 }

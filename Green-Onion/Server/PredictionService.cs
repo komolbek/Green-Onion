@@ -1,90 +1,90 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using GreenOnion.Server.DataLayer.DomainModels;
-using GreenOnion.Server.Enums;
-using System.Collections.Generic;
+﻿//using System.Threading.Tasks;
+//using Microsoft.AspNetCore.Mvc;
+//using GreenOnion.Server.DataLayer.DomainModels;
+//using GreenOnion.Server.Enums;
+//using System.Collections.Generic;
 
-namespace GreenOnion.Server
-{
-    public class PredictionService
-    {
-        public PredictionService()
-        {
-        }
+//namespace GreenOnion.Server
+//{
+//    public class PredictionService
+//    {
+//        public PredictionService()
+//        {
+//        }
 
-        // Sums the number of tickets of each project. Devides the sum to the number of projects.
-        // Returns an avarage as approximate number of required tickets for project.        
-        public int CalculateRequiredNum(string predictingItem, List<Project> projects)
-        {
-            int predictionNum = 0;
+//        // Sums the number of tickets of each project. Devides the sum to the number of projects.
+//        // Returns an avarage as approximate number of required tickets for project.        
+//        public int CalculateRequiredNum(string predictingItem, List<Project> projects)
+//        {
+//            int predictionNum = 0;
 
-            // predicting entity is either Ticket or Member depending on parameter passage.
-            int sumOfPredictingEntity = 0;
+//            // predicting entity is either Ticket or Member depending on parameter passage.
+//            int sumOfPredictingEntity = 0;
 
-            int projectCount = 0;
+//            int projectCount = 0;
 
-            projects.ForEach(delegate (Project project)
-            {
-                projectCount++;
+//            projects.ForEach(delegate (Project project)
+//            {
+//                projectCount++;
 
-                if (predictingItem == PredictionType.Tickets.ToString())
-                {
-                    sumOfPredictingEntity += project.Tickets.Count;
-                }
-                else
-                {
-                    sumOfPredictingEntity += project.Members.Count;
-                }
+//                if (predictingItem == PredictionType.Tickets.ToString())
+//                {
+//                    sumOfPredictingEntity += project.Tickets.Count;
+//                }
+//                else
+//                {
+//                    sumOfPredictingEntity += project.Members.Count;
+//                }
 
-            });
+//            });
 
-            predictionNum = (sumOfPredictingEntity + projectCount * 2) / projectCount;
+//            predictionNum = (sumOfPredictingEntity + projectCount * 2) / projectCount;
 
-            return predictionNum;
-        }
+//            return predictionNum;
+//        }
 
-        public async Task<ActionResult<string>> CalculateDurationByHistoricalData(string projectId, string companyId, GreenOnionContext context)
-        {
-            Company company = await context.companies.FindAsync(companyId);
+//        public async Task<ActionResult<string>> CalculateDurationByHistoricalData(string projectId, string companyId, GreenOnionContext context)
+//        {
+//            Company company = await context.companies.FindAsync(companyId);
 
-            int totalDays = 0;
-            int predictedDays = 0;
-            int totalProjects = company.Projects.Count;
+//            int totalDays = 0;
+//            int predictedDays = 0;
+//            int totalProjects = company.Projects.Count;
 
-            company.Projects.ForEach(delegate (Project project)
-            {
-                int projectDuration = (int)(project.closedDate - project.startedDate).TotalDays + 2;
-                totalDays += projectDuration;
-            });
+//            company.Projects.ForEach(delegate (Project project)
+//            {
+//                int projectDuration = (int)(project.closedDate - project.startedDate).TotalDays + 2;
+//                totalDays += projectDuration;
+//            });
 
-            predictedDays = totalDays / totalProjects;
+//            predictedDays = totalDays / totalProjects;
 
-            return $"Predicted project duration by company historical data is {predictedDays} days";
-        }
+//            return $"Predicted project duration by company historical data is {predictedDays} days";
+//        }
 
-        public async Task<ActionResult<string>> CalculateDurationByTicketComplexity(string projectId, GreenOnionContext context)
-        {
-            int daysSum = 0;
+//        public async Task<ActionResult<string>> CalculateDurationByTicketComplexity(string projectId, GreenOnionContext context)
+//        {
+//            int daysSum = 0;
 
-            Project project = await context.projects.FindAsync(projectId);
+//            Project project = await context.projects.FindAsync(projectId);
 
-            project.Tickets.ForEach(delegate (Ticket ticket)
-            {
-                if (ticket.complexity == TicketComplexity.Easy.ToString())
-                {
-                    daysSum += 2;
-                }
-                else if (ticket.complexity == TicketComplexity.Hard.ToString())
-                {
-                    daysSum += 4;
-                }
-                else
-                {
-                    daysSum += 7;
-                }
-            });
+//            project.Tickets.ForEach(delegate (Ticket ticket)
+//            {
+//                if (ticket.complexity == TicketComplexity.Easy.ToString())
+//                {
+//                    daysSum += 2;
+//                }
+//                else if (ticket.complexity == TicketComplexity.Hard.ToString())
+//                {
+//                    daysSum += 4;
+//                }
+//                else
+//                {
+//                    daysSum += 7;
+//                }
+//            });
 
-            return $"Predicted project duration by opened tickets complexity is {daysSum} days";
-        }
-    }
-}
+//            return $"Predicted project duration by opened tickets complexity is {daysSum} days";
+//        }
+//    }
+//}

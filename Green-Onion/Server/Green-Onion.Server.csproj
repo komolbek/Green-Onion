@@ -37,9 +37,15 @@
     <None Remove="Enums\" />
     <None Remove="Microsoft.EntityFrameworkCore.Tools" />
     <None Remove="Microsoft.EntityFrameworkCore.Sqlite" />
+    <None Remove="DataLayer\DataAccess\" />
+    <None Remove="DataLayer\DataMappers\" />
+    <None Remove="DataLayer\RequestModels\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers\" />
     <Folder Include="Enums\" />
+    <Folder Include="DataLayer\DataAccess\" />
+    <Folder Include="DataLayer\DataMappers\" />
+    <Folder Include="DataLayer\RequestModels\" />
   </ItemGroup>
 </Project>

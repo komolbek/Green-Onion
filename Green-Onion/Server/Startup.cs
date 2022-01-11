@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using GreenOnion.Server;
 using Microsoft.EntityFrameworkCore;
+using GreenOnion.Server.DataLayer.DataAccess;
 
 namespace Green_Onion.Server
 {
@@ -24,9 +25,16 @@ namespace Green_Onion.Server
 
             services.AddControllersWithViews();
             services.AddRazorPages();
+
+            // custom data access classes DI
+            services.AddTransient<UserAccountDataAccess>();
+            services.AddTransient<UserDataAccess>();
+
+            // DbContext DI
             services.AddDbContext<GreenOnionContext>(options =>
                 options.UseSqlite(Configuration.GetConnectionString("GreenOnionContext")));
 
+            // JSON serialise DI
             services.AddControllersWithViews()
                     .AddNewtonsoftJson(options =>
                         options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
