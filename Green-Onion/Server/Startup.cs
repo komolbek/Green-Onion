@@ -31,6 +31,7 @@ namespace Green_Onion.Server
             services.AddTransient<UserAccountDataAccess>();
             services.AddTransient<UserDataAccess>();
             services.AddTransient<ProjectDataAccess>();
+            services.AddTransient<CompanyDataAccess>();
             services.AddTransient<CompanyEmployeeDataAccess>(); 
             services.AddTransient<ProjectMemberDataAccess>();
 

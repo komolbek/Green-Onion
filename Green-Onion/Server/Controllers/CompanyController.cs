@@ -17,19 +17,20 @@ namespace Green_Onion.Server.Controllers
     {
 
         private readonly CompanyDataAccess _companyData;
-        private readonly PredictionService predictionService;
         private readonly CompanyEmployeeDataAccess _companyEmployeeData;
         private readonly UserDataAccess _userData;
+        private readonly ProjectDataAccess _projectData;
 
         public CompanyController(
             CompanyDataAccess companyData,
             CompanyEmployeeDataAccess companyEmployeeData,
-            UserDataAccess userData)
+            UserDataAccess userData,
+            ProjectDataAccess projectData)
         {
             _companyData = companyData;
-            //this.predictionService = new PredictionService();
             _companyEmployeeData = companyEmployeeData;
             _userData = userData;
+            _projectData = projectData;
         }
 
 
@@ -43,16 +44,47 @@ namespace Green_Onion.Server.Controllers
         // GET: api/Company/getById/5
         [Route("getById/{id}")]
         [HttpGet]
-        public ActionResult<Company> GetCompanyById(string id)
+        public ActionResult<CompanyDto> GetCompanyById(string id)
         {
             var company = _companyData.Select(id);
+            var projects = GetCompanyProjects(id);
+            var employees = GetCompanyEmployees(id);
+            var creator = UserDataMapper.MapEntityToDto(_userData.Select(_companyData.Select(id).userId));
 
             if (company == null)
             {
                 return NotFound();
             }
 
-            return company;
+            return CompanyDataMapper.MapEntityToDto(company, projects, employees, creator);
+        }
+
+        private List<ProjectDto> GetCompanyProjects(string id)
+        {
+            var projectEntities = _projectData.SelectAllByCompanyId(id);
+
+            var projectDtos = new List<ProjectDto>();
+
+            foreach (var projEntity in projectEntities)
+            {
+                projectDtos.Add(ProjectDataMapper.MapEntityToDto(projEntity));
+            }
+
+            return projectDtos;
+        }
+
+        private List<UserDto> GetCompanyEmployees(string id)
+        {
+            var companyEmployeeEntities = _companyEmployeeData.SelectAllByCompanyId(id);
+
+            var userDtos = new List<UserDto>(); // employees
+
+            foreach (var companyEmployeeEntity in companyEmployeeEntities)
+            {
+                userDtos.Add(UserDataMapper.MapEntityToDto(_userData.Select(companyEmployeeEntity.userId)));
+            }
+
+            return userDtos;
         }
 
         // Changes company data
@@ -61,7 +93,7 @@ namespace Green_Onion.Server.Controllers
         [HttpPut]
         public ActionResult<CompanyDto> ChangeCompany(string id, CompanyDto companyDto)
         {         
-            if (id != companyDto.companyId)
+            if (id != companyDto.companyId && companyDto.creator.userId is null)
             {
                 return BadRequest();
             }
@@ -127,17 +159,17 @@ namespace Green_Onion.Server.Controllers
 
             var userEntity = _userData.Select(userId);
 
-            company.employees.Add(UserDataMapper.MapEntityToDto(userEntity));
+            if (userEntity is not null)
+            {
+                company.employees.Add(UserDataMapper.MapEntityToDto(userEntity));
+            } else
+            {
+                return NotFound();
+            }
+            
 
             return company;
-
-        }       
-
-        // Removes project from company. Deletes project from DB. Call this api to delete project.
-        // PUT: api/Company
-        [Route("removeProject/{projectId}/fromCompany/{companyId}")]
-        [HttpPut]
-        
+        }               
 
         // Get current user associated companies by his userId.
         // Returns mainly a company names because companies will be used for list.
@@ -145,14 +177,17 @@ namespace Green_Onion.Server.Controllers
         // GET: api/Company
         [Route("getCompaniesByUserId/{userId}")]
         [HttpGet]
-        public ActionResult<IEnumerable<Company>> GetCompaniesByUserId(string userId)
+        public ActionResult<IEnumerable<CompanyDto>> GetCompaniesByUserId(string userId)
         {
-            var companyEntityIds = _companyEmployeeData.SelectAllByUserId(userId);
-            var companies = new List<Company>();
+            var companyEmployeeEntities = _companyEmployeeData.SelectAllByUserId(userId);
 
-            foreach (var companyEnitityId in companyEntityIds)
+            var companies = new List<CompanyDto>();
+
+            foreach (var companyEmployeeEntity in companyEmployeeEntities)
             {
-                companies.Add(_companyData.Select(companyEnitityId));
+                companies.Add(CompanyDataMapper.MapEntityToDto(
+                    _companyData.Select(companyEmployeeEntity.companyId),
+                    UserDataMapper.MapEntityToDto(_userData.Select(companyEmployeeEntity.userId))));
             }
 
             return companies;

@@ -26,12 +26,12 @@ namespace GreenOnion.Server.DataLayer.DataAccess
 
         // SELECT
         // retrieves & returns all companies from db related to the particular user by his id
-        public List<string> SelectAllByUserId(string id)
+        public IEnumerable<CompanyEmployee> SelectAllByUserId(string id)
         {
             
-            return (List<string>)_context.Company_employee
+            return _context.Company_employee
                 .Where(comp => comp.userId == id)
-                .Select(comp => new { comp.companyId });
+                .Select(comp => comp);
         }
 
         // INSERT

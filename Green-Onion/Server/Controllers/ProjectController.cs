@@ -343,6 +343,12 @@
 
 // MEANS JUST DELETE PROJECT
 
+
+
+// Removes project from company. Deletes project from DB. Call this api to delete project.
+// PUT: api/Company
+//[Route("removeProject/{projectId}/fromCompany/{companyId}")]
+//[HttpPut]
 //public ActionResult<Company> RemoveProject(string copmanyId, string projectId)
 //{
 //    Company company = _context.companies.Find(copmanyId);

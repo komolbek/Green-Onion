@@ -15,13 +15,11 @@ namespace GreenOnion.Server.DataLayer.DataMappers
 
         public static Company MapDtoToEntity(CompanyDto companyDto)
         {
-            Company company = new Company()
-            {
-                companyId = companyDto.companyId,
-                name = companyDto.name,
-                userId = companyDto.creator.userId,
-                aboutInfo = companyDto.aboutInfo
-            };
+            Company company = new Company();
+            company.companyId = companyDto.companyId;
+            company.name = companyDto.name;
+            company.userId = companyDto.creator.userId;
+            company.aboutInfo = companyDto.aboutInfo;
 
             return company;
         }

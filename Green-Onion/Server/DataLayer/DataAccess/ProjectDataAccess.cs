@@ -17,11 +17,11 @@ namespace GreenOnion.Server.DataLayer.DataAccess
 
         // SELECT
         // retrieves & returns all projects related to particular company by its id
-        public IEnumerable<Project> SelectAllByCompanyId(string id)
+        public List<Project> SelectAllByCompanyId(string id)
         {
             return _context.Project
                 .Where(proj => proj.companyId == id)
-                .Select(proj => proj);
+                .Select(proj => proj).ToList();
         }
     }
 }
