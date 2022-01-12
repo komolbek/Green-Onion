@@ -24,6 +24,18 @@ namespace GreenOnion.Server.DataLayer.DataMappers
             return company;
         }
 
+        public static CompanyDto MapEntityToDto(Company companyEntity)
+        {
+            CompanyDto companyDto = new CompanyDto()
+            {
+                companyId = companyEntity.companyId,
+                name = companyEntity.name,
+                aboutInfo = companyEntity.aboutInfo
+            };
+
+            return companyDto;
+        }
+
         public static CompanyDto MapEntityToDto(
             ActionResult<Company> companyEntity,
             List<ProjectDto> projects,

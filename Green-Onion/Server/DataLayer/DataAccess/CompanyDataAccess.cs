@@ -34,7 +34,7 @@ namespace GreenOnion.Server.DataLayer.DataAccess
         }
 
         // SELECT
-        // retrieves user by his id
+        // retrieves company by his id
         public Company Select(string id)
         {
             return _context.Company.FirstOrDefault(company => company.companyId == id);
@@ -48,7 +48,7 @@ namespace GreenOnion.Server.DataLayer.DataAccess
         }
 
         // UPDATE
-        // updates user information
+        // updates company information
         public ActionResult<Company> Update(string id, Company company)
         {
             _context.Entry(company).State = EntityState.Modified;

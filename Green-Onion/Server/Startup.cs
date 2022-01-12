@@ -34,6 +34,7 @@ namespace Green_Onion.Server
             services.AddTransient<CompanyDataAccess>();
             services.AddTransient<CompanyEmployeeDataAccess>(); 
             services.AddTransient<ProjectMemberDataAccess>();
+            services.AddTransient<PredictionService>(); 
 
             // DbContext DI
             services.AddDbContext<GreenOnionContext>(options =>

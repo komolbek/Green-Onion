@@ -10,6 +10,19 @@ namespace GreenOnion.Server.DataLayer.DataMappers
         {
         }
 
+        // Mapper used when new project with empty data is created
+        public static ProjectDto MapEntityToDto(Project projectEntity, UserDto creator)
+        {
+            ProjectDto projectDto = new ProjectDto()
+            {
+                projectId = projectEntity.projectId,
+                name = projectEntity.name,
+                creator = creator
+            };
+
+            return projectDto;
+        }
+
         // Mapped for list view
         public static ProjectDto MapEntityToDto(Project projectEntity)
         {
@@ -25,21 +38,41 @@ namespace GreenOnion.Server.DataLayer.DataMappers
             return projectDto;
         }
 
-        public static ProjectDto MapEntityToDto(Project projectEntity, UserDto userDto, CompanyDto companyDto, List<UserDto> members)
+        public static ProjectDto MapEntityToDto(
+            Microsoft.AspNetCore.Mvc.ActionResult<Project> projectEntity,
+            UserDto userDto,
+            CompanyDto companyDto,
+            List<UserDto> members,
+            List<TicketDto> tickets)
         {
             ProjectDto projectDto = new ProjectDto()
             {
-                projectId = projectEntity.projectId,
-                name = projectEntity.name,
-                startedDate = projectEntity.startedDate,
-                closedDate = projectEntity.closedDate,
-                dueDate = projectEntity.dueDate,
+                projectId = projectEntity.Value.projectId,
+                name = projectEntity.Value.name,
+                startedDate = projectEntity.Value.startedDate,
+                closedDate = projectEntity.Value.closedDate,
+                dueDate = projectEntity.Value.dueDate,
                 creator = userDto,
                 company = companyDto,
-                members = members
+                members = members,
+                tickets = tickets
             };
 
             return projectDto;
+        }
+
+        public static Project MapDtoToEntity(ProjectDto projectDto)
+        {
+            return new Project()
+            {
+                projectId = projectDto.projectId,
+                companyId = projectDto.company.companyId,
+                userId = projectDto.creator.userId,
+                name = projectDto.name,
+                startedDate = projectDto.startedDate,
+                closedDate = projectDto.closedDate,
+                dueDate = projectDto.dueDate
+            };
         }
     }
 }
