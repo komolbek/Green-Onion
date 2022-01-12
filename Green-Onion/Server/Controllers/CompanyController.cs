@@ -16,15 +16,20 @@ namespace Green_Onion.Server.Controllers
     public class CompanyController : ControllerBase
     {
 
-        private readonly CompanyDataAccess _companyDataAccess;
+        private readonly CompanyDataAccess _companyData;
         private readonly PredictionService predictionService;
-        private readonly CompanyDataMapper _companyDataMapper;
+        private readonly CompanyEmployeeDataAccess _companyEmployeeData;
+        private readonly UserDataAccess _userData;
 
-        public CompanyController(CompanyDataAccess companyDataAccess, CompanyDataMapper companyDataMapper)
+        public CompanyController(
+            CompanyDataAccess companyData,
+            CompanyEmployeeDataAccess companyEmployeeData,
+            UserDataAccess userData)
         {
-            _companyDataAccess = companyDataAccess;
-            this.predictionService = new PredictionService();
-            _companyDataMapper = companyDataMapper;
+            _companyData = companyData;
+            //this.predictionService = new PredictionService();
+            _companyEmployeeData = companyEmployeeData;
+            _userData = userData;
         }
 
 
@@ -32,17 +37,15 @@ namespace Green_Onion.Server.Controllers
         [HttpGet]
         public IEnumerable<Company> GetCompanies()
         {
-            return _companyDataAccess.SelectAll();
+            return _companyData.SelectAll();
         }
-
-
 
         // GET: api/Company/getById/5
         [Route("getById/{id}")]
         [HttpGet]
         public ActionResult<Company> GetCompanyById(string id)
         {
-            var company = _companyDataAccess.Select(id);
+            var company = _companyData.Select(id);
 
             if (company == null)
             {
@@ -56,16 +59,25 @@ namespace Green_Onion.Server.Controllers
         // PUT: api/Company/changeById/5
         [Route("changeById/{id}")]
         [HttpPut]
-        public ActionResult<CompanyDto> PutCompany(string id, Company company)
-        {
-            if (id != company.companyId)
+        public ActionResult<CompanyDto> ChangeCompany(string id, CompanyDto companyDto)
+        {         
+            if (id != companyDto.companyId)
             {
                 return BadRequest();
             }
 
+            // saving Dto data to use when mapping back
+            var projects = companyDto.projects;
+            var employees = companyDto.employees;
+            var creator = companyDto.creator;
+
+            Company companyEntity = CompanyDataMapper.MapDtoToEntity(companyDto);
+
             try
             {
-                return _companyDataMapper.MapEntityToDto(_companyDataAccess.Update(id, company));
+                return CompanyDataMapper
+                    .MapEntityToDto(_companyData.Update(id, companyEntity), projects, employees, creator);
+
             }
             catch (DbUpdateException)
             {
@@ -73,154 +85,75 @@ namespace Green_Onion.Server.Controllers
             }
         }
 
-        
-
         // POST: api/Company
         [HttpPost]
         public ActionResult<CompanyDto> PostCompany(Company company)
         {
-            _context.companies.Add(company);
-            User user = _context.users.Find(company.userId);
-
-            user.companyId = company.companyId;
-
-            company.Employees.Add(user);
+            CompanyEmployee companyEmployee = new CompanyEmployee()
+            {
+                companyId = company.companyId,
+                userId = company.userId
+            };
 
             try
             {
-                _context.SaveChangesAsync();
+                var companyEntity = _companyData.Insert(company);
+
+                _companyEmployeeData.Insert(companyEmployee);
+
+                var creator = UserDataMapper.MapEntityToDto(_userData.Select(companyEntity.userId));
+
+                return CompanyDataMapper.MapEntityToDto(company, creator);
             }
             catch (DbUpdateException)
             {
-                if (CompanyExists(company.companyId))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return CreatedAtAction(nameof(GetCompany), new { id = company.companyId }, company);
-        }
-
-        private bool CompanyExists(string id)
-        {
-            return _context.companies.Any(e => e.companyId == id);
+                throw;                
+            }            
         }
 
         // Add employee into the company
         // PUT: api/Company
-        [Route("addEmployee/{userId}/companyId/{companyId}")]
+        [Route("addEmployee/userId/{userId}")]
         [HttpPut]
-        public async Task<ActionResult<Company>> AddEmployee(string companyID, string userId)
+        public ActionResult<CompanyDto> AddEmployee(string userId, CompanyDto company)
         {
-            Company company = _context.companies.Find(companyID);
-            User user = _context.users.Find(userId);
-
-            if (company is not null && (user is not null))
+            CompanyEmployee companyEmployee = new CompanyEmployee()
             {
-                company.Employees.Add(user);
+                companyId = company.companyId,
+                userId = userId
+            };
 
-                _context.Entry(company).State = EntityState.Modified;
+            _companyEmployeeData.Insert(companyEmployee);
 
-                _context.SaveChanges();
+            var userEntity = _userData.Select(userId);
 
-                return company;
-            }
-            else
-            {
-                return null;
-            }
+            company.employees.Add(UserDataMapper.MapEntityToDto(userEntity));
 
-        }
+            return company;
 
-        // Add project into the company
-        // PUT: api/Company
-        [Route("addProject/projectId/inCompany/{companyId}")]
-        [HttpPut]
-        public async Task<ActionResult<Company>> AddProject(string companyId, string projectId)
-        {
-            Company company = await _context.companies.FindAsync(companyId);
-            Project project = await _context.projects.FindAsync(projectId);
-
-            if (company is not null && project is not null)
-            {
-                company.Projects.Add(project);
-
-                _context.Entry(company).State = EntityState.Modified;
-
-                await _context.SaveChangesAsync();
-
-                return company;
-            }
-            else
-            {
-                return null;
-            }
-        }
+        }       
 
         // Removes project from company. Deletes project from DB. Call this api to delete project.
         // PUT: api/Company
         [Route("removeProject/{projectId}/fromCompany/{companyId}")]
         [HttpPut]
-        public ActionResult<Company> RemoveProject(string copmanyId, string projectId)
-        {
-            Company company = _context.companies.Find(copmanyId);
-            Project project = company.Projects.Find(proj => proj.ProjectId == projectId);
+        
 
-            RemoveProjectTicketsFromAssignees(project);
-            RemoveTicketFromProject(project);
-
-            company.Projects.Remove(project);
-
-            _context.projects.Remove(project);
-            _context.SaveChanges();
-
-            return company;
-        }
-
-        private void RemoveProjectTicketsFromAssignees(Project project)
-        {
-            project.Members.ForEach(delegate (User member)
-            {
-                member.Tickets.ForEach(delegate (Ticket ticket)
-                {
-                    if (ticket.projectId == project.projectId)
-                    {
-                        _ = member.Tickets.Remove(ticket);
-                    }
-                });
-            });
-        }
-
-        private void RemoveTicketFromProject(Project project)
-        {
-            project.Tickets.ForEach(delegate (Ticket ticket)
-            {
-                _context.tickets.Remove(ticket);
-            });
-        }
-
-
-
-        // Get companies by userId
+        // Get current user associated companies by his userId.
+        // Returns mainly a company names because companies will be used for list.
+        // When selected specific company, companyDto with all data will be returned.
         // GET: api/Company
-        [Route("getCompanyByUserId/{userId}")]
+        [Route("getCompaniesByUserId/{userId}")]
         [HttpGet]
-        public async Task<ActionResult<List<Company>>> GetCompanyByUserId(string userId)
+        public ActionResult<IEnumerable<Company>> GetCompaniesByUserId(string userId)
         {
-            List<Company> companies = new List<Company>();
-            User employee = await _context.users.FindAsync(userId);
+            var companyEntityIds = _companyEmployeeData.SelectAllByUserId(userId);
+            var companies = new List<Company>();
 
-            await _context.companies.ForEachAsync(delegate (Company company)
+            foreach (var companyEnitityId in companyEntityIds)
             {
-                if (company.Employees.Contains(employee))
-                {
-                    companies.Add(company);
-                }
-            });
+                companies.Add(_companyData.Select(companyEnitityId));
+            }
 
             return companies;
         }

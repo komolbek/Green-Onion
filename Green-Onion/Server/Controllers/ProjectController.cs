@@ -179,11 +179,11 @@
 //            Project project = await _context.projects.FindAsync(projId);
 //            User user = await _context.users.FindAsync(userId);
 
-            
+
 //            if (project is not null && user is not null)
 //            {
 //                project.Members.Add(user);
-                
+
 //                _context.Entry(project).State = EntityState.Modified;
 
 //                await _context.SaveChangesAsync();
@@ -293,4 +293,90 @@
 //            return filteredTicketsByProjectLists;
 //        }
 //    }
+//}
+
+// GET: api/Prediction
+//[Route("makepPrediction/projectId/{projectId}/companyId/{companyId}")]
+//[HttpGet]
+//public async Task<ActionResult<PredictionDto>> MakePrediction(string projectId, string companyId)
+//{
+//    PredictionDto prediction = new PredictionDto();
+
+//    Company company = await _context.companies.FindAsync(companyId);
+
+//    // project is used to make prediction for it by its tickets complexy
+//    Project project = await _context.projects.FindAsync(projectId);
+//    prediction.DurationByTicketComplexity = predictionService.CalculateDurationByTicketComplexity(projectId, _context).ToString();
+
+//    prediction.NumOfMembers = predictionService.CalculateRequiredNum(PredictionType.Members.ToString(), company.Projects);
+//    prediction.NumOfTickets = predictionService.CalculateRequiredNum(PredictionType.Tickets.ToString(), company.Projects);
+
+//    prediction.DurationByHistoricalData = predictionService.CalculateDurationByHistoricalData(projectId, companyId, _context).ToString();
+
+//    return prediction;
+//}
+
+/// Add project into the company
+//        // PUT: api/Company
+//        [Route("addProject/projectId/inCompany/{companyId}")]
+//[HttpPut]
+//public async Task<ActionResult<Company>> AddProject(string companyId, string projectId)
+//{
+//    Company company = await _context.companies.FindAsync(companyId);
+//    Project project = await _context.projects.FindAsync(projectId);
+
+//    if (company is not null && project is not null)
+//    {
+//        company.Projects.Add(project);
+
+//        _context.Entry(company).State = EntityState.Modified;
+
+//        await _context.SaveChangesAsync();
+
+//        return company;
+//    }
+//    else
+//    {
+//        return null;
+//    }
+//}
+
+// MEANS JUST DELETE PROJECT
+
+//public ActionResult<Company> RemoveProject(string copmanyId, string projectId)
+//{
+//    Company company = _context.companies.Find(copmanyId);
+//    Project project = company.Projects.Find(proj => proj.ProjectId == projectId);
+
+//    RemoveProjectTicketsFromAssignees(project);
+//    RemoveTicketFromProject(project);
+
+//    company.Projects.Remove(project);
+
+//    _context.projects.Remove(project);
+//    _context.SaveChanges();
+
+//    return company;
+//}
+
+//private void RemoveProjectTicketsFromAssignees(Project project)
+//{
+//    project.Members.ForEach(delegate (User member)
+//    {
+//        member.Tickets.ForEach(delegate (Ticket ticket)
+//        {
+//            if (ticket.projectId == project.projectId)
+//            {
+//                _ = member.Tickets.Remove(ticket);
+//            }
+//        });
+//    });
+//}
+
+//private void RemoveTicketFromProject(Project project)
+//{
+//    project.Tickets.ForEach(delegate (Ticket ticket)
+//    {
+//        _context.tickets.Remove(ticket);
+//    });
 //}

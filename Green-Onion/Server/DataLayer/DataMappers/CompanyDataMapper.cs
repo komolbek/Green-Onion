@@ -1,22 +1,19 @@
 ﻿using GreenOnion.Server.DataLayer.DomainModels;
 using GreenOnion.Server.DataLayer.DTOs;
 using Microsoft.AspNetCore.Mvc;
-using GreenOnion.Server.DataLayer.DataAccess;
+using System.Collections.Generic;
 
 namespace GreenOnion.Server.DataLayer.DataMappers
 {
     // Class used for mapping Company related objects from Request, DTO model to Entity and vice versa.
     public class CompanyDataMapper
-    {
+   {
 
-        private readonly UserDataAccess _userDataAccess;
-
-        public CompanyDataMapper(UserDataAccess userDataAccess)
+        public CompanyDataMapper()
         {
-            _userDataAccess = userDataAccess;
         }
 
-        public Company MapDtoToEntity(CompanyDto companyDto)
+        public static Company MapDtoToEntity(CompanyDto companyDto)
         {
             Company company = new Company()
             {
@@ -29,17 +26,38 @@ namespace GreenOnion.Server.DataLayer.DataMappers
             return company;
         }
 
-        public CompanyDto MapEntityToDto(ActionResult<Company> companyEntity)
+        public static CompanyDto MapEntityToDto(
+            ActionResult<Company> companyEntity,
+            List<ProjectDto> projects,
+            List<UserDto> employees,
+            UserDto creator)
         {
             CompanyDto companyDto = new CompanyDto()
             {
                 companyId = companyEntity.Value.companyId,
                 name = companyEntity.Value.name,
-                creator = UserDataMapper.MapEntityToDto(_userDataAccess.Select(companyEntity.Value.userId)),
-                aboutInfo = companyEntity.Value.aboutInfo
+                creator = creator,
+                aboutInfo = companyEntity.Value.aboutInfo,
+                projects = projects,
+                employees = employees
             };
             
-            return new CompanyDto();
+            return companyDto;
+        }
+
+        public static CompanyDto MapEntityToDto(Company companyEntity, UserDto creator)
+        {
+            CompanyDto companyDto = new CompanyDto()
+            {
+                companyId = companyEntity.companyId,
+                name = companyEntity.name,
+                creator = creator,
+                aboutInfo = null,
+                projects = null,
+                employees = null
+            };
+
+            return companyDto;
         }
     }
 }

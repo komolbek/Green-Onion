@@ -30,7 +30,9 @@ namespace Green_Onion.Server
             // custom data access classes DI
             services.AddTransient<UserAccountDataAccess>();
             services.AddTransient<UserDataAccess>();
-            services.AddTransient<UserDataMapper>();
+            services.AddTransient<ProjectDataAccess>();
+            services.AddTransient<CompanyEmployeeDataAccess>(); 
+            services.AddTransient<ProjectMemberDataAccess>();
 
             // DbContext DI
             services.AddDbContext<GreenOnionContext>(options =>

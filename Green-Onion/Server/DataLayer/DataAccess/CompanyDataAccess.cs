@@ -17,13 +17,15 @@ namespace GreenOnion.Server.DataLayer.DataAccess
 
         // INSERT
         // adds company to db
-        public void Insert(Company company)
+        public Company Insert(Company company)
         {
             _context.Company.Add(company);
 
             try
             {
                 _context.SaveChanges();
+
+                return Select(company.companyId);
             }
             catch (DbUpdateException)
             {
@@ -59,7 +61,7 @@ namespace GreenOnion.Server.DataLayer.DataAccess
             }
             catch (DbUpdateException)
             {
-                if (!UserExists(id))
+                if (!CompanyExists(id))
                 {
                     return new NotFoundResult();
                 }
@@ -70,9 +72,9 @@ namespace GreenOnion.Server.DataLayer.DataAccess
             }
         }
 
-        private bool UserExists(string id)
+        private bool CompanyExists(string id)
         {
-            return _context.User.Any(e => e.userId == id);
+            return _context.Company.Any(e => e.companyId == id);
         }
     }
 }

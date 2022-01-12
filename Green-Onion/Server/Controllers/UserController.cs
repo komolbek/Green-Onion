@@ -14,13 +14,11 @@ namespace Green_Onion.Server.Controllers
     {
         private readonly UserDataAccess _userDataAccess;
         private readonly UserAccountDataAccess _userAccountDataAccess;
-        private readonly UserDataMapper _userDataMapper;
 
-        public UserController(UserDataAccess userDataAccess, UserAccountDataAccess userAccountDataAccess, UserDataMapper userDataMapper)
+        public UserController(UserDataAccess userDataAccess, UserAccountDataAccess userAccountDataAccess)
         {
             _userDataAccess = userDataAccess;
             _userAccountDataAccess = userAccountDataAccess;
-            _userDataMapper = userDataMapper;
         }
 
         // GET: api/User
@@ -96,8 +94,8 @@ namespace Green_Onion.Server.Controllers
         [HttpPost]
         public ActionResult<User> PostUser(UserSignUpRequest signUpRequest)
         {
-            var user = _userDataMapper.MapSignUpRequestToUser(signUpRequest);
-            var userAccount = _userDataMapper.MapSignUpRequestToUserAccount(signUpRequest);
+            var user = UserDataMapper.MapSignUpRequestToUser(signUpRequest);
+            var userAccount = UserDataMapper.MapSignUpRequestToUserAccount(signUpRequest);
 
             try
             {
