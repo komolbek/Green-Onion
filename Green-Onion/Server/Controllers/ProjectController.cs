@@ -163,7 +163,7 @@ namespace Green_Onion.Server.Controllers
             // delete project and member relation data
             _projectMemberData.DeleteColumn(id);
             // delete project's tickets plus their assignees
-            _ticketData.DeleteByColumnProjId(id);
+            _ticketData.DeleteAllTicketsOfProject(id);
             _projectData.Delete(id);
 
             if (_projectData.Select(id) is null)
@@ -258,9 +258,6 @@ namespace Green_Onion.Server.Controllers
             };
 
             _projectMemberData.Insert(projectMember);
-
-            User userEntity = _userData.Select(userId);
-            UserDto userDto = UserDataMapper.MapEntityToDto(userEntity);
 
             return GetProject(projectId);
         }

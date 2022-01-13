@@ -12,22 +12,41 @@ namespace GreenOnion.Server.DataLayer.DataMappers
 
         public static Ticket MapDtoToEntity(TicketDto ticketDto)
         {
-            return new Ticket();
+            return new() 
+                {
+                    ticketId = ticketDto.ticketId,
+                    title = ticketDto.name,
+                    userId = ticketDto.creator.userId,
+                    projectId = ticketDto.project.projectId,
+                    status = ticketDto.status,
+                    description = ticketDto.description,
+                    complexity = ticketDto.complexity,
+                    createdDate = ticketDto.createdDate,
+                    closedDate = ticketDto.closedDate,
+                    dueDate = ticketDto.dueDate
+                };
         }
 
         // Mapper for simple list view
-        public static TicketDto MapEntityToDto(Ticket ticketEntity)
+        public static TicketDto MapEntityToDto(
+            Microsoft.AspNetCore.Mvc.ActionResult<Ticket> ticketEntity,
+            UserDto creator = null,
+            ProjectDto project = null,
+            UserDto assignee = null)
         {
-            return new TicketDto()
+            return new()
             {
-                ticketId = ticketEntity.ticketId,
-                name = ticketEntity.title,
-                status = ticketEntity.status,
-                description = ticketEntity.description,
-                complexity = ticketEntity.complexity,
-                startedDate = ticketEntity.createdDate,
-                closedDate = ticketEntity.closedDate,
-                dueDate = ticketEntity.dueDate
+                ticketId = ticketEntity.Value.ticketId,
+                name = ticketEntity.Value.title,
+                status = ticketEntity.Value.status,
+                description = ticketEntity.Value.description,
+                complexity = ticketEntity.Value.complexity,
+                createdDate = ticketEntity.Value.createdDate,
+                closedDate = ticketEntity.Value.closedDate,
+                dueDate = ticketEntity.Value.dueDate,
+                creator = creator,
+                project = project,
+                assignee = assignee
             };
         }
     }

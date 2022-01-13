@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using GreenOnion.Server.DataLayer.DomainModels;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace GreenOnion.Server.DataLayer.DataAccess

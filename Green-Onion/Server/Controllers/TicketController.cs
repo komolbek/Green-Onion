@@ -1,156 +1,192 @@
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Threading.Tasks;
-//using Microsoft.AspNetCore.Mvc;
-//using Microsoft.EntityFrameworkCore;
-//using GreenOnion.Server;
-//using GreenOnion.Server.DataLayer.DomainModels;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using GreenOnion.Server.DataLayer.DomainModels;
+using GreenOnion.Server.DataLayer.DTOs;
+using GreenOnion.Server.DataLayer.DataAccess;
+using GreenOnion.Server.DataLayer.DataMappers;
 
-//namespace Green_Onion.Server.Controllers
-//{
-//    [Route("api/[controller]")]
-//    [ApiController]
-//    public class TicketController : ControllerBase
-//    {
-//        private readonly GreenOnionContext _context;
+namespace Green_Onion.Server.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class TicketController : ControllerBase
+    {
+        private readonly TicketDataAccess _ticketData;
+        private readonly UserDataAccess _userData;
+        private readonly ProjectDataAccess _projectData;
+        private readonly TicketAssigneeDataAccess _ticketAssigneeData;
 
-//        public TicketController(GreenOnionContext context)
-//        {
-//            _context = context;
-//        }
+        public TicketController(
+            TicketDataAccess ticketData,
+            UserDataAccess userData,
+            ProjectDataAccess projectData,
+            TicketAssigneeDataAccess ticketAssigneeData)
+        {
+            _ticketData = ticketData;
+            _userData = userData;
+            _projectData = projectData;
+            _ticketAssigneeData = ticketAssigneeData;
+        }
 
-//        // GET: api/Ticket
-//        [HttpGet]
-//        public async Task<ActionResult<IEnumerable<Ticket>>> Gettickets()
-//        {
-//            return await _context.tickets.ToListAsync();
-//        }
+        // GET: api/Ticket
+        [HttpGet]
+        public ActionResult<IEnumerable<TicketDto>> GetTickets()
+        {
+            List<TicketDto> ticketDtos = new();
+            List<Ticket> ticketentites= _ticketData.SelectAll();
 
-//        // GET: api/Ticket/5
-//        [HttpGet("{id}")]
-//        public async Task<ActionResult<Ticket>> GetTicket(string id)
-//        {
-//            var ticket = await _context.tickets.FindAsync(id);
+            foreach (var ticketEntity in ticketentites)
+            {
+                ticketDtos.Add(TicketDataMapper.MapEntityToDto(ticketEntity));
+            }
 
-//            if (ticket == null)
-//            {
-//                return NotFound();
-//            }
+            return ticketDtos;
+        }
 
-//            return ticket;
-//        }
+        // GET: api/Ticket/getById/5
+        [Route("getById/{id}")]
+        [HttpGet]
+        public ActionResult<TicketDto> GetTicket(string id)
+        {
+            var ticketEntity = _ticketData.Select(id);
+            var project = ProjectDataMapper.MapEntityToDto(_projectData.Select(ticketEntity.projectId));
+            var assingee = GetAssingee(id);
+            var creator = UserDataMapper.MapEntityToDto(_userData.Select(ticketEntity.userId));
 
-//        // PUT: api/Ticket/5
-//        [HttpPut("{id}")]
-//        public async Task<IActionResult> PutTicket(string id, Ticket ticket)
-//        {
-//            if (id != ticket.ticketId)
-//            {
-//                return BadRequest();
-//            }
+            if (project == null || creator == null || assingee == null)
+            {
+                return NotFound();
+            }
 
-//            _context.Entry(ticket).State = EntityState.Modified;
+            return TicketDataMapper.MapEntityToDto(ticketEntity, creator, project, assingee);
+        }
 
-//            try
-//            {
-//                await _context.SaveChangesAsync();
-//            }
-//            catch (DbUpdateConcurrencyException)
-//            {
-//                if (!TicketExists(id))
-//                {
-//                    return NotFound();
-//                }
-//                else
-//                {
-//                    throw;
-//                }
-//            }
+        private UserDto GetAssingee(string ticketId)
+        {
+            var ticketAssignees = _ticketAssigneeData.SelectAllByTicketId(ticketId);
 
-//            return NoContent();
-//        }
+            foreach (var ticketAssignee in ticketAssignees)
+            {
+                if(ticketAssignee.ticketId == ticketId)
+                {
+                    return UserDataMapper.MapEntityToDto(_userData.Select(ticketAssignee.userId));
+                }
+            }
 
-//        // POST: api/Ticket
-//        [HttpPost]
-//        public async Task<ActionResult<Ticket>> PostTicket(Ticket ticket)
-//        {
-//            _context.tickets.Add(ticket);
-//            try
-//            {
-//                await _context.SaveChangesAsync();
-//            }
-//            catch (DbUpdateException)
-//            {
-//                if (TicketExists(ticket.ticketId))
-//                {
-//                    return Conflict();
-//                }
-//                else
-//                {
-//                    throw;
-//                }
-//            }
+            return null;
+        }
 
-//            return CreatedAtAction("GetTicket", new { id = ticket.ticketId }, ticket);
-//        }
+        // Changes data about Ticket
+        // PUT: api/Ticket/changeById/5
+        [Route("changeById/{id}")]
+        [HttpPut]
+        public ActionResult<TicketDto> PutTicket(string id, TicketDto ticketDto)
+        {
+            if (id != ticketDto.ticketId && ticketDto.creator.userId is null)
+            {
+                return BadRequest();
+            }
 
-//        // DELETE: api/Ticket/5
-//        [HttpDelete("{id}")]
-//        public async Task<IActionResult> DeleteTicket(string id)
-//        {
-//            var ticket = await _context.tickets.FindAsync(id);
-//            if (ticket == null)
-//            {
-//                return NotFound();
-//            }
+            // saving Dto data to use when mapping back
+            var project = ticketDto.project;
+            var creator = ticketDto.creator;
+            var assignee = ticketDto.assignee;
 
-//            _context.tickets.Remove(ticket);
-//            await _context.SaveChangesAsync();
+            Ticket ticketEntity = TicketDataMapper.MapDtoToEntity(ticketDto);
 
-//            return NoContent();
-//        }
+            try
+            {
+                return TicketDataMapper.MapEntityToDto(_ticketData.Update(id, ticketEntity), creator, project, assignee);
+            }
+            catch (DbUpdateException)
+            {
+                throw;
+            }
+        }
 
-//        private bool TicketExists(string id)
-//        {
-//            return _context.tickets.Any(e => e.ticketId == id);
-//        }
-//    }
-//}
+        // POST: api/Ticket/assignee/2
+        [Route("assignee/{assigneeId?}")]
+        [HttpPost]
+        public ActionResult<TicketDto> PostTicket(Ticket ticket, string assigneeId = null)
+        {
+            var creator = UserDataMapper.MapEntityToDto(_userData.Select(ticket.userId));
+            var project = ProjectDataMapper.MapEntityToDto(_projectData.Select(ticket.projectId));
 
-// POST
+            try
+            {                
+                if (creator is not null && project is not null)
+                {
+                    var ticketEntity = _ticketData.Insert(ticket);
 
-// Gets Ticket & Project from DB by IDs, adds Ticket to Project and saves Project records in the DB
-// PUT: api/projects
-//[Route("addTicketByProjectId/{projectId}")]
-//[HttpPut]
-//public async Task<ActionResult<Project>> AddTicket(string projId, Ticket ticket)
-//{
-//    Project project = await _context.projects.FindAsync(projId);
-//    project.Tickets.Add(ticket);
+                    if (assigneeId is not null)
+                    {
+                        var assignee = UserDataMapper.MapEntityToDto(_userData.Select(assigneeId));
 
-//    _context.tickets.Add(ticket);
+                        TicketAssignee ticketAssignee = new()
+                        {
+                            ticketId = ticket.ticketId,
+                            userId = assigneeId
+                        };
 
-//    await _context.SaveChangesAsync();
+                        _ticketAssigneeData.Insert(ticketAssignee);
 
-//    return project;
-//}
+                        return TicketDataMapper.MapEntityToDto(ticket, creator, project, assignee);
+                    } else
+                    {
+                        return TicketDataMapper.MapEntityToDto(ticket, creator, project);
+                    }
+                }
+                else
+                {
+                    return NoContent();
+                }
+            }
+            catch (DbUpdateException)
+            {
+                throw;
+            }
+        }
 
-//DELETE
+        // PUT: api/Ticket/addAssignee/4toTicket/3
+        [Route("addAssignee/{assigneeId}/toTicket/{ticketId}")]
+        [HttpPut]
+        public ActionResult<TicketDto> AddAssignee(string assigneeId, string ticketId)
+        {
+            if (assigneeId is null | ticketId is null)
+            {
+                return BadRequest();
+            }
 
-// Removes ticket from project. Also deletes ticket from DB. Call this api to delete ticket.
-//        // UPDATE: api/projects
-//        [Route("removeTicket/{ticketId}/inProject/{projectId}")]
-//        [HttpPut]
-//        public async Task<ActionResult<Project>> RemoveTicket(string projectId, string ticketId)
-//        {
-//            Project project = await _context.projects.FindAsync(projectId);
-//            Ticket ticket = project.Tickets.Find(tick => tick.TicketId == ticketId);
+            TicketAssignee ticketAssignee= new()
+            {
+                ticketId = ticketId,
+                userId = assigneeId
+            };
 
-//            project.Tickets.Remove(ticket);
+            _ticketAssigneeData.Insert(ticketAssignee);
 
-//            _context.tickets.Remove(ticket);
+            return GetTicket(ticketId);
+        }
 
-//            await _context.SaveChangesAsync();
+        // DELETE: api/Ticket/deleteById/5
+        [Route("deleteById/{id}")]
+        [HttpDelete]
+        public string DeleteTicket(string id)
+        {
+            // delete ticket and assignee relation data
+            _ticketAssigneeData.DeleteColumn(id);
+            _ticketData.Delete(id);
 
-//            return project;
-//        }
+            if (_ticketData.Select(id) is null)
+            {
+                return "successfully deleted";
+            } else
+            {
+                return "could not deleted";
+            }
+        }
+    }
+}

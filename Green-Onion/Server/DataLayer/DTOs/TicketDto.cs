@@ -23,7 +23,7 @@ namespace GreenOnion.Server.DataLayer.DTOs
 
         public string complexity { get; set; }
 
-        public string startedDate { get; set; }
+        public string createdDate { get; set; }
 
         public string closedDate { get; set; }
 
