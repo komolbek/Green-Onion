@@ -44,7 +44,7 @@ namespace GreenOnion.Server.DataLayer.DataAccess
 
         // SELECT
         // retrieves & returns all projects from db
-        public IEnumerable<Project> SelectAll()
+        public List<Project> SelectAll()
         {
             return _context.Project.ToList();
         }

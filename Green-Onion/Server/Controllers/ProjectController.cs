@@ -4,8 +4,10 @@ using Microsoft.EntityFrameworkCore;
 using GreenOnion.Server.DataLayer.DataAccess;
 using GreenOnion.Server.DataLayer.DomainModels;
 using GreenOnion.Server.DataLayer.DTOs;
-using GreenOnion.Server;
+using GreenOnion.Server.Servers;
 using GreenOnion.Server.DataLayer.DataMappers;
+using GreenOnion.Server.Enums;
+using System;
 
 namespace Green_Onion.Server.Controllers
 {
@@ -176,23 +178,7 @@ namespace Green_Onion.Server.Controllers
 
             
         }
-
-        // GET: api/Project
-        //[Route("projectDuration/{projectId}/byTicketComplexity")]
-        //[HttpGet]
-        //public ActionResult<string> GetDurationByTicketComplexity(string projectId)
-        //{
-        //    return predictionService.CalculateDurationByTicketComplexity(projectId, _context);
-        //}
-
-        //        // GET: api/Project
-        //        [Route("projectDuration/projectId/{projectId}/byCompanyData/companyId/{companyId}")]
-        //        [HttpGet]
-        //        public async Task<ActionResult<string>> GetDurationByHistoricalData(string projectId, string companyId)
-        //        {
-        //            return await predictionService.CalculateDurationByHistoricalData(projectId, companyId, _context);
-        //        }
-
+                
         // Get projects by company id
         // GET: api/projects
         [Route("getByCompanyId/{companyId}")]
@@ -268,16 +254,16 @@ namespace Green_Onion.Server.Controllers
         [HttpGet]
         public ActionResult<List<UserDto>> GetMembers(string projectId)
         {          
-            return GetMembers(projectId);
+            return GetProjectMembers(projectId);
         }
 
         // Get project tickets
         // GET: api/projects
         [Route("getTicketsByProjectId/{projectId}")]
         [HttpGet("{projectId}")]
-        public ActionResult<List<Ticket>> GetTickets(string projectId)
+        public ActionResult<List<TicketDto>> GetTickets(string projectId)
         {
-            return GetTickets(projectId);
+            return GetProjectTickets(projectId);
         }
 
 
@@ -318,51 +304,39 @@ namespace Green_Onion.Server.Controllers
 
             return filteredTickets;
         }
+
+        //GET: api/Project/makePrediction/projectId/1
+        [Route("makePrediction/projectId/{projectId}")]
+        [HttpGet]
+        public ActionResult<PredictionDto> MakePrediction(string projectId, string companyId)
+        {
+            PredictionDto prediction = new PredictionDto();
+            prediction.DurationByTicketComplexity = _predictionService.CalculateDurationByTicketComplexity(projectId);
+            prediction.ProjectDueByTicketComplexity = _predictionService.CalculateDueByTicketComplexity(projectId);
+
+            prediction.NumOfMembers = _predictionService.CalculateRequiredNum(PredictionType.Members.ToString(), projectId);
+            prediction.NumOfTickets = _predictionService.CalculateRequiredNum(PredictionType.Tickets.ToString(), projectId);
+
+            prediction.DurationByHistoricalData = _predictionService.CalculateDurationByHistoricalData(projectId);
+            prediction.ProjectDueByHistoricalData = _predictionService.CalculateDueByHistoricalData(projectId);
+
+            return prediction;
+        }
+
+        // GET: api/Project
+        [Route("projectDuration/byTicketComplexity/{projectId}")]
+        [HttpGet]
+        public ActionResult<string> GetDurationByTicketComplexity(string projectId)
+        {
+            return _predictionService.CalculateDurationByTicketComplexity(projectId);
+        }
+
+        // GET: api/Project
+        [Route("projectDuration/byCompanyData/{projectId}")]
+        [HttpGet]
+        public ActionResult<string> GetDurationByHistoricalData(string projectId)
+        {
+            return _predictionService.CalculateDurationByHistoricalData(projectId);
+        }
     }
 }
-
-//GET: api / Prediction
-//[Route("makepPrediction/projectId/{projectId}/companyId/{companyId}")]
-//[HttpGet]
-//public async Task<ActionResult<PredictionDto>> MakePrediction(string projectId, string companyId)
-//{
-//    PredictionDto prediction = new PredictionDto();
-
-//    Company company = await _context.companies.FindAsync(companyId);
-
-//    // project is used to make prediction for it by its tickets complexy
-//    Project project = await _context.projects.FindAsync(projectId);
-//    prediction.DurationByTicketComplexity = predictionService.CalculateDurationByTicketComplexity(projectId, _context).ToString();
-
-//    prediction.NumOfMembers = predictionService.CalculateRequiredNum(PredictionType.Members.ToString(), company.Projects);
-//    prediction.NumOfTickets = predictionService.CalculateRequiredNum(PredictionType.Tickets.ToString(), company.Projects);
-
-//    prediction.DurationByHistoricalData = predictionService.CalculateDurationByHistoricalData(projectId, companyId, _context).ToString();
-
-//    return prediction;
-//}
-
-/// Add project into the company
-//        // PUT: api/Company
-//        [Route("addProject/projectId/inCompany/{companyId}")]
-//[HttpPut]
-//public async Task<ActionResult<Company>> AddProject(string companyId, string projectId)
-//{
-//    Company company = await _context.companies.FindAsync(companyId);
-//    Project project = await _context.projects.FindAsync(projectId);
-
-//    if (company is not null && project is not null)
-//    {
-//        company.Projects.Add(project);
-
-//        _context.Entry(company).State = EntityState.Modified;
-
-//        await _context.SaveChangesAsync();
-
-//        return company;
-//    }
-//    else
-//    {
-//        return null;
-//    }
-//}

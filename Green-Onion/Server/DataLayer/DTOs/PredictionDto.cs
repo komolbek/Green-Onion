@@ -17,18 +17,18 @@ namespace GreenOnion.Server.DataLayer.DTOs
         // defines predicted due date of the project using current tickets complexity
         // TicketComplexity enum is used here.
         // Adding Easy - 2 days, Medium - 4 days & Hard - 6 days while prediction.
-        private DateTime projectDueByTicketComplexity;
+        private string projectDueByTicketComplexity;
 
         // defines predicted due date of the project using historical data
         // "historical data" means the projects of the company & the tickets of the projects.
-        private DateTime projectDueByHistoricalData;
+        private string projectDueByHistoricalData;
 
         public int NumOfMembers { get => requiredNumOfMembers; set => requiredNumOfMembers = value; }
         public int NumOfTickets { get => requiredNumOfTickets; set => requiredNumOfTickets = value; }
         public string DurationByTicketComplexity { get => projectDurationByTicketComplexity; set => projectDurationByTicketComplexity = value; }
         public string DurationByHistoricalData { get => projectDurationByHistoricalData; set => projectDurationByHistoricalData = value; }
-        public DateTime ProjectDueByTicketComplexity { get => projectDueByTicketComplexity; set => projectDueByTicketComplexity = value; }
-        public DateTime ProjectDueByHistoricalData { get => projectDueByHistoricalData; set => projectDueByHistoricalData = value; }
+        public string ProjectDueByTicketComplexity { get => projectDueByTicketComplexity; set => projectDueByTicketComplexity = value; }
+        public string ProjectDueByHistoricalData { get => projectDueByHistoricalData; set => projectDueByHistoricalData = value; }
 
         public PredictionDto()
         {

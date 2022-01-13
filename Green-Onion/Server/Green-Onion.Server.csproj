@@ -40,6 +40,7 @@
     <None Remove="DataLayer\DataAccess\" />
     <None Remove="DataLayer\DataMappers\" />
     <None Remove="DataLayer\RequestModels\" />
+    <None Remove="Services\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers\" />
@@ -47,5 +48,6 @@
     <Folder Include="DataLayer\DataAccess\" />
     <Folder Include="DataLayer\DataMappers\" />
     <Folder Include="DataLayer\RequestModels\" />
+    <Folder Include="Services\" />
   </ItemGroup>
 </Project>

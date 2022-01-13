@@ -1,12 +1,9 @@
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using GreenOnion.Server.DataLayer.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GreenOnion.Server.DataLayer.DataMappers;
 using GreenOnion.Server.DataLayer.DomainModels;
-using GreenOnion.Server.Enums;
 using GreenOnion.Server.DataLayer.DataAccess;
 
 namespace Green_Onion.Server.Controllers

@@ -18,17 +18,20 @@ namespace Green_Onion.Server.Controllers
         private readonly UserDataAccess _userData;
         private readonly ProjectDataAccess _projectData;
         private readonly TicketAssigneeDataAccess _ticketAssigneeData;
+        private readonly ProjectMemberDataAccess _projectMemberData;
 
         public TicketController(
             TicketDataAccess ticketData,
             UserDataAccess userData,
             ProjectDataAccess projectData,
-            TicketAssigneeDataAccess ticketAssigneeData)
+            TicketAssigneeDataAccess ticketAssigneeData,
+            ProjectMemberDataAccess projectMemberData)
         {
             _ticketData = ticketData;
             _userData = userData;
             _projectData = projectData;
             _ticketAssigneeData = ticketAssigneeData;
+            _projectMemberData = projectMemberData;
         }
 
         // GET: api/Ticket
@@ -107,8 +110,8 @@ namespace Green_Onion.Server.Controllers
             }
         }
 
-        // POST: api/Ticket/assignee/2
-        [Route("assignee/{assigneeId?}")]
+        // POST: api/Ticket/2
+        [Route("{assigneeId?}")]
         [HttpPost]
         public ActionResult<TicketDto> PostTicket(Ticket ticket, string assigneeId = null)
         {
@@ -160,15 +163,40 @@ namespace Green_Onion.Server.Controllers
                 return BadRequest();
             }
 
-            TicketAssignee ticketAssignee= new()
+            var projectMembers = GetProjectMembers(_ticketData.Select(ticketId).projectId);
+
+            foreach (var projectMember in projectMembers)
             {
-                ticketId = ticketId,
-                userId = assigneeId
-            };
+                // Check if assigned member is within project
+                if (projectMember.userId == assigneeId)
+                {
+                    TicketAssignee ticketAssignee = new()
+                    {
+                        ticketId = ticketId,
+                        userId = assigneeId
+                    };
 
-            _ticketAssigneeData.Insert(ticketAssignee);
+                    _ticketAssigneeData.Insert(ticketAssignee);
 
-            return GetTicket(ticketId);
+                    return GetTicket(ticketId);
+                }
+            }
+
+            return null;
+        }
+
+        private List<UserDto> GetProjectMembers(string id)
+        {
+            var projectMemberEntities = _projectMemberData.SelectAllByProjectId(id);
+
+            var userDtos = new List<UserDto>(); // employees
+
+            foreach (var projectMemberEntity in projectMemberEntities)
+            {
+                userDtos.Add(UserDataMapper.MapEntityToDto(_userData.Select(projectMemberEntity.userId)));
+            }
+
+            return userDtos;
         }
 
         // DELETE: api/Ticket/deleteById/5
