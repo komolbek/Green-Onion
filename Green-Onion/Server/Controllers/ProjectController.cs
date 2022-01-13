@@ -16,6 +16,7 @@ namespace Green_Onion.Server.Controllers
     public class ProjectController : ControllerBase
     {
         private readonly PredictionService _predictionService;
+        private readonly ReportService _reportService;
         private readonly ProjectDataAccess _projectData;
         private readonly ProjectMemberDataAccess _projectMemberData;
         private readonly UserDataAccess _userData;
@@ -28,7 +29,8 @@ namespace Green_Onion.Server.Controllers
             ProjectMemberDataAccess projectMemberData,
             UserDataAccess userData,
             CompanyDataAccess companyData,
-            TicketDataAccess ticketData)
+            TicketDataAccess ticketData,
+            ReportService reportService)
         {
             _projectData = projectData;
             _predictionService = predictionService;
@@ -36,6 +38,7 @@ namespace Green_Onion.Server.Controllers
             _userData = userData;
             _companyData = companyData;
             _ticketData = ticketData;
+            _reportService = reportService;
         }
 
         // GET: api/Project
@@ -89,6 +92,20 @@ namespace Green_Onion.Server.Controllers
                 ticketDtos.Add(TicketDataMapper.MapEntityToDto(tickEntity));
             }
 
+            return ticketDtos;
+        }
+
+        // GET: api/Project/closedTickets/1
+        [Route("closedTickets/{projectId}")]
+        [HttpGet]
+        public List<TicketDto> GetProjectClosedTickets(string projectId, ProjectRange projectRange)
+        {
+            var ticketDtos = new List<TicketDto>();
+
+            foreach (var ticketEntity in _reportService.GetClosedTickets(projectId, projectRange))
+            {
+                ticketDtos.Add(TicketDataMapper.MapEntityToDto(ticketEntity));
+            }
             return ticketDtos;
         }
 

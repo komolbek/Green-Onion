@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using GreenOnion.Server.DataLayer.DataMappers;
 using GreenOnion.Server.DataLayer.DomainModels;
 using GreenOnion.Server.DataLayer.DataAccess;
+using GreenOnion.Server.Servers;
 
 namespace Green_Onion.Server.Controllers
 {
@@ -17,17 +18,20 @@ namespace Green_Onion.Server.Controllers
         private readonly CompanyEmployeeDataAccess _companyEmployeeData;
         private readonly UserDataAccess _userData;
         private readonly ProjectDataAccess _projectData;
+        private readonly ReportService _reportService; 
 
         public CompanyController(
             CompanyDataAccess companyData,
             CompanyEmployeeDataAccess companyEmployeeData,
             UserDataAccess userData,
-            ProjectDataAccess projectData)
+            ProjectDataAccess projectData,
+            ReportService reportService)
         {
             _companyData = companyData;
             _companyEmployeeData = companyEmployeeData;
             _userData = userData;
             _projectData = projectData;
+            _reportService = reportService;
         }
 
 
@@ -82,6 +86,27 @@ namespace Green_Onion.Server.Controllers
             }
 
             return userDtos;
+        }
+
+        // GET: api/Company/closedProjects/1
+        [Route("closedProjects/{companyId}")]
+        [HttpGet]
+        public List<ProjectDto> GetCompanyClosedProjects(string companyId, ProjectRange projectRange)
+        {
+            var projectDtos = new List<ProjectDto>();
+
+            foreach (var projectEntity in _reportService.GetClosedProjects(companyId, projectRange))
+            {
+                projectDtos.Add(ProjectDataMapper.MapEntityToDto(projectEntity));
+            }
+            return projectDtos;
+        }
+        // GET: api/Company/getProjectsProgress/1
+        [Route("getProjectsProgress/{companyId}")]
+        [HttpGet]
+        public Dictionary<string, string> GetProjectsProgress(string companyId)
+        {
+            return _reportService.GetProjectsProgress(companyId);
         }
 
         // Changes company data

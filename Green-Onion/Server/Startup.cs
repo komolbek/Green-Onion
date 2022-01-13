@@ -37,6 +37,7 @@ namespace Green_Onion.Server
             services.AddTransient<PredictionService>();
             services.AddTransient<TicketDataAccess>();
             services.AddTransient<TicketAssigneeDataAccess>();
+            services.AddTransient<ReportService>();
 
             // DbContext DI
             services.AddDbContext<GreenOnionContext>(options =>
