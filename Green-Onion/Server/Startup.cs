@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using GreenOnion.Server;
 using Microsoft.EntityFrameworkCore;
-using GreenOnion.Server.Servers;
+using GreenOnion.Server.Services;
 using GreenOnion.Server.DataLayer.DataAccess;
 
 namespace Green_Onion.Server

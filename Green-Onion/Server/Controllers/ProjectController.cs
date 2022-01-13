@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using GreenOnion.Server.DataLayer.DataAccess;
 using GreenOnion.Server.DataLayer.DomainModels;
 using GreenOnion.Server.DataLayer.DTOs;
-using GreenOnion.Server.Servers;
+using GreenOnion.Server.Services;
 using GreenOnion.Server.DataLayer.DataMappers;
 using GreenOnion.Server.Enums;
 using System;

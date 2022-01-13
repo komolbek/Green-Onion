@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using GreenOnion.Server.DataLayer.DataMappers;
 using GreenOnion.Server.DataLayer.DomainModels;
 using GreenOnion.Server.DataLayer.DataAccess;
-using GreenOnion.Server.Servers;
+using GreenOnion.Server.Services;
 
 namespace Green_Onion.Server.Controllers
 {

@@ -1,11 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using GreenOnion.Server.DataLayer.DomainModels;
+﻿using GreenOnion.Server.DataLayer.DomainModels;
 using GreenOnion.Server.Enums;
 using System.Collections.Generic;
 using GreenOnion.Server.DataLayer.DataAccess;
 using System;
 
-namespace GreenOnion.Server.Servers
+namespace GreenOnion.Server.Services
 {
     public class PredictionService
     {
