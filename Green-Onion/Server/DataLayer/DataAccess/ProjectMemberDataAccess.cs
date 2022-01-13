@@ -17,12 +17,22 @@ namespace GreenOnion.Server.DataLayer.DataAccess
         }
 
         // SELECT
-        // retrieves & returns all users(members) from db related to the particular project by its id
+        // retrieves & returns all projectMem from db related to the particular project by its id
+        // used to get project members
         public IEnumerable<ProjectMember> SelectAllByProjectId(string id)
         {
             return _context.Project_member
                 .Where(memb => memb.projectId == id)
                 .Select(memb => memb);
+        }
+
+        // SELECT
+        // retrieves & returns all projectMem object from db related to the particular user by its id
+        public List<ProjectMember> SelectAllByUserId(string id)
+        {
+            return _context.Project_member
+                .Where(memb => memb.userId == id)
+                .Select(memb => memb).ToList();
         }
 
         // INSERT
@@ -53,7 +63,6 @@ namespace GreenOnion.Server.DataLayer.DataAccess
             {
                 _context.Project_member.Remove(projMem);
             }
-
 
             try
             {

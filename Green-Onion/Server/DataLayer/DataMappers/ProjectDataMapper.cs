@@ -11,13 +11,20 @@ namespace GreenOnion.Server.DataLayer.DataMappers
         }
 
         // Mapper used when new project with empty data is created
-        public static ProjectDto MapEntityToDto(Project projectEntity, UserDto creator)
+        public static ProjectDto MapEntityToDto(
+            Project projectEntity,
+            UserDto creator = null,
+            CompanyDto companyDto = null,
+            List<UserDto> members = null)
         {
             ProjectDto projectDto = new ProjectDto()
             {
                 projectId = projectEntity.projectId,
                 name = projectEntity.name,
-                creator = creator
+                creator = creator,
+                company = companyDto,
+                startedDate = projectEntity.startedDate,
+                members = members
             };
 
             return projectDto;

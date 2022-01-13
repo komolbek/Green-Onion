@@ -81,6 +81,23 @@ namespace GreenOnion.Server.DataLayer.DataAccess
             }
         }
 
+        // DELETE
+        public void Delete(string id)
+        {
+            var projectToDelete = _context.Project.FirstOrDefault(proj => proj.projectId == id);
+
+            _context.Project.Remove(projectToDelete);
+
+            try
+            {
+                _context.SaveChanges();
+            }
+            catch (DbUpdateException)
+            {
+                throw;
+            }
+        }
+
         private bool ProjectExists(string id)
         {
             return _context.Project.Any(e => e.projectId == id);

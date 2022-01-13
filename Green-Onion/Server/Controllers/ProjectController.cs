@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GreenOnion.Server.DataLayer.DataAccess;
@@ -134,13 +132,21 @@ namespace Green_Onion.Server.Controllers
 
             try
             {
-                var projectEntity = _projectData.Insert(project);
+                var creator = UserDataMapper.MapEntityToDto(_userData.Select(project.userId));
+                var company = CompanyDataMapper.MapEntityToDto(_companyData.Select(project.companyId));
+                var members = new List<UserDto>() { creator };
 
-                _projectMemberData.Insert(projectMember);
+                if (creator is not null && company is not null)
+                {
+                    var projectEntity = _projectData.Insert(project);
 
-                var creator = UserDataMapper.MapEntityToDto(_userData.Select(projectEntity.userId));
-
-                return ProjectDataMapper.MapEntityToDto(project, creator);
+                    _projectMemberData.Insert(projectMember);
+                    return ProjectDataMapper.MapEntityToDto(project, creator, company, members);
+                }
+                else
+                {
+                    return NoContent();
+                }
             }
             catch (DbUpdateException)
             {
@@ -154,7 +160,11 @@ namespace Green_Onion.Server.Controllers
         [HttpDelete]
         public string DeleteProject(string id)
         {
+            // delete project and member relation data
             _projectMemberData.DeleteColumn(id);
+            // delete project's tickets plus their assignees
+            _ticketData.DeleteByColumnProjId(id);
+            _projectData.Delete(id);
 
             if (_projectData.Select(id) is null)
             {
@@ -167,13 +177,13 @@ namespace Green_Onion.Server.Controllers
             
         }
 
-        //        // GET: api/Project
-        //        [Route("projectDuration/{projectId}/byTicketComplexity")]
-        //        [HttpGet]
-        //        public async Task<ActionResult<string>> GetDurationByTicketComplexity(string projectId)
-        //        {
-        //            return await predictionService.CalculateDurationByTicketComplexity(projectId, _context);
-        //        }
+        // GET: api/Project
+        //[Route("projectDuration/{projectId}/byTicketComplexity")]
+        //[HttpGet]
+        //public ActionResult<string> GetDurationByTicketComplexity(string projectId)
+        //{
+        //    return predictionService.CalculateDurationByTicketComplexity(projectId, _context);
+        //}
 
         //        // GET: api/Project
         //        [Route("projectDuration/projectId/{projectId}/byCompanyData/companyId/{companyId}")]
@@ -183,160 +193,134 @@ namespace Green_Onion.Server.Controllers
         //            return await predictionService.CalculateDurationByHistoricalData(projectId, companyId, _context);
         //        }
 
-        //        // Get projects by company id
-        //        // GET: api/projects
-        //        [Route("getProjectByCompanyId/{companyId}")]
-        //        [HttpGet]
-        //        public async Task<ActionResult<List<Project>>> GetProjectsByCompanyId(string companyID)
-        //        {
-        //            Company company = await _context.companies.FindAsync(companyID);
+        // Get projects by company id
+        // GET: api/projects
+        [Route("getByCompanyId/{companyId}")]
+        [HttpGet]
+        public ActionResult<List<ProjectDto>> GetProjectsByCompanyId(string companyId)
+        {
+            var projectEntities = _projectData.SelectAllByCompanyId(companyId);
 
-        //            return company.Projects;
-        //        }
+            return GetProjectsBy(projectEntities);
+        }
 
-        //        // Get projects by user id
-        //        // GET: api/projects
-        //        [Route("getProjectsByUserId/{userId}")]
-        //        [HttpGet]
-        //        public async Task<ActionResult<List<Project>>> GetProjectsByUserId(string userId)
-        //        {
-        //            List<Project> projects = new List<Project>();
+        // Get projects by user id
+        // GET: api/projects
+        [Route("getByUserId/{userId}")]
+        [HttpGet]
+        public ActionResult<List<ProjectDto>> GetProjectsByUserId(string userId)
+        {
+            List<ProjectMember> projectMembers = _projectMemberData.SelectAllByUserId(userId);
+            List<Project> projectEntities = new List<Project>();
+            
+            foreach (var projectMember in projectMembers)
+            {
+                projectEntities.Add(_projectData.Select(projectMember.projectId));
+            }
 
-        //            User user = await _context.users.FindAsync(userId);
+            return GetProjectsBy(projectEntities);
+        }
 
-        //            await _context.projects.ForEachAsync(delegate (Project project)
-        //            {
-        //                if (project.Members.Contains(user))
-        //                {
-        //                    projects.Add(project);
-        //                }
-        //            });
+        // reusable
+        private List<ProjectDto> GetProjectsBy(List<Project> projectEntities) 
+        {
+            List<ProjectDto> projectDtos= new List<ProjectDto>();
 
-        //            return projects;
-        //        }
+            foreach (var project in projectEntities)
+            {
+                // data for projectDto
+                var company = CompanyDataMapper.MapEntityToDto(_companyData.Select(_projectData.Select(project.projectId).companyId));
+                var tickets = GetProjectTickets(project.projectId);
+                var members = GetProjectMembers(project.projectId);
+                var creator = UserDataMapper.MapEntityToDto(_userData.Select(_projectData.Select(project.projectId).userId));
 
-        //        // Add memeber to the project. Gets User & Project from DB by IDs, adds User to Project and saves Project records in the DB
-        //        // PUT: api/projects
-        //        [Route("addMember/{userId}/toProject/{projectId}")]
-        //        [HttpPut]
-        //        public async Task<ActionResult<Project>> AddMember(string projId, string userId)
-        //        {
-        //            Project project = await _context.projects.FindAsync(projId);
-        //            User user = await _context.users.FindAsync(userId);
+                projectDtos.Add(ProjectDataMapper.MapEntityToDto(project, creator, company, members, tickets));
+            }
+
+            return projectDtos;
+        }
+
+        // Add memeber to the project. Gets User & Project from DB by IDs, adds User to Project and saves Project records in the DB
+        // PUT: api/projects
+        [Route("addMember/{userId}/toProject/{projectId}")]
+        [HttpPut]
+        public ActionResult<ProjectDto> AddMember(string userId, string projectId)
+        {
+            if (projectId is null | userId is null)
+            {
+                return BadRequest();
+            }
+
+            ProjectMember projectMember = new()
+            {
+                projectId = projectId,
+                userId = userId
+            };
+
+            _projectMemberData.Insert(projectMember);
+
+            User userEntity = _userData.Select(userId);
+            UserDto userDto = UserDataMapper.MapEntityToDto(userEntity);
+
+            return GetProject(projectId);
+        }
+
+        // Get project members. Members who have assigned Ticket from selected project
+        // GET: api/projects
+        [Route("getMembersByProjectId/{projectId}")]
+        [HttpGet]
+        public ActionResult<List<UserDto>> GetMembers(string projectId)
+        {          
+            return GetMembers(projectId);
+        }
+
+        // Get project tickets
+        // GET: api/projects
+        [Route("getTicketsByProjectId/{projectId}")]
+        [HttpGet("{projectId}")]
+        public ActionResult<List<Ticket>> GetTickets(string projectId)
+        {
+            return GetTickets(projectId);
+        }
 
 
-        //            if (project is not null && user is not null)
-        //            {
-        //                project.Members.Add(user);
+        // Moves ticket in project list by changing ticket status in selected project & updates DB.
+        // PUT: api/project
+        [Route("moveTicket/{ticketId}")]
+        [HttpPut]
+        public ActionResult<Dictionary<string, List<TicketDto>>> MoveTicket(string ticketId, Ticket newTicket, string oldTicketStatus)
+        {
 
-        //                _context.Entry(project).State = EntityState.Modified;
+            ActionResult<Ticket> ticketEntity = _ticketData.Update(ticketId, newTicket);
+            List<TicketDto> ticketDtos = GetProjectTickets(ticketEntity.Value.projectId);
 
-        //                await _context.SaveChangesAsync();
+            return FilterProjectTicketsByStatus(ticketDtos);
+        }
 
-        //                return project;
-        //            }
-        //            else
-        //            {
-        //                return null;
-        //            }
+        // Returns filtered Tickets by status.
+        private Dictionary<string, List<TicketDto>> FilterProjectTicketsByStatus(List<TicketDto> ticketDtos)
+        {
+            // Filtered tickets by lists like To do, Doing & Done.
+            Dictionary<string, List<TicketDto>> filteredTickets= new Dictionary<string, List<TicketDto>>();
 
-        //            return project;
-        //        }
+            foreach (TicketDto ticketDto in ticketDtos)
+            {
+                if (ticketDto.status == "todo")
+                {
+                    filteredTickets["todo"].Add(ticketDto);
+                }
+                else if (ticketDto.status == "doing")
+                {
+                    filteredTickets["doing"].Add(ticketDto);
+                }
+                else
+                {
+                    filteredTickets["done"].Add(ticketDto);
+                }
+            }
 
-        //        // Get project members. Members who have assigned Ticket from selected project
-        //        // GET: api/projects
-        //        [Route("getMembersByProjectId/{projectId}")]
-        //        [HttpGet]
-        //        public async Task<ActionResult<List<User>>> GetMembers(string projectId)
-        //        {
-        //            Project project = await _context.projects.FindAsync(projectId);
-
-        //            return project.Members;
-        //        }
-
-        //        // Get project tickets
-        //        // GET: api/projects
-        //        [Route("getTicetsByProjectId/{projectId}")]
-        //        [HttpGet("{projectId}")]
-        //        public async Task<ActionResult<List<Ticket>>> GetTickets(string projectId)
-        //        {
-        //            Project project = await _context.projects.FindAsync(projectId);
-
-        //            return project.Tickets;
-        //        }
-
-        //        // Gets Ticket & Project from DB by IDs, adds Ticket to Project and saves Project records in the DB
-        //        // PUT: api/projects
-        //        [Route("addTicketByProjectId/{projectId}")]
-        //        [HttpPut]
-        //        public async Task<ActionResult<Project>> AddTicket(string projId, Ticket ticket)
-        //        {
-        //            Project project = await _context.projects.FindAsync(projId);
-        //            project.Tickets.Add(ticket);
-
-        //            _context.tickets.Add(ticket);
-
-        //            await _context.SaveChangesAsync();
-
-        //            return project;
-        //        }
-
-        //        // Removes ticket from project. Also deletes ticket from DB. Call this api to delete ticket.
-        //        // UPDATE: api/projects
-        //        [Route("removeTicket/{ticketId}/inProject/{projectId}")]
-        //        [HttpPut]
-        //        public async Task<ActionResult<Project>> RemoveTicket(string projectId, string ticketId)
-        //        {
-        //            Project project = await _context.projects.FindAsync(projectId);
-        //            Ticket ticket = project.Tickets.Find(tick => tick.TicketId == ticketId);
-
-        //            project.Tickets.Remove(ticket);
-
-        //            _context.tickets.Remove(ticket);
-
-        //            await _context.SaveChangesAsync();
-
-        //            return project;
-        //        }
-
-        //        // Moves ticket in project list by changign ticket status in selected project & updates DB.
-        //        // PUT: api/project
-        //        [Route("moveTicket/{ticketId}/inProject/{projectId}")]
-        //        [HttpPut("{projectId}/{ticketId}")]
-        //        public async Task<ActionResult<Dictionary<string, List<Ticket>>>> MoveTicket(string projectId, string ticketId, string newTicketStatus, string oldTicketStatus)
-        //        {
-        //            Project project = await _context.projects.FindAsync(projectId);
-        //            Ticket ticket = project.Tickets.Find(_tickId => _tickId.TicketId == ticketId);
-
-        //            ticket.status = newTicketStatus;
-        //            await _context.SaveChangesAsync();
-
-        //            return FilterProjectTicketsByStatus(project);
-        //        }
-
-        //        // Returns filtered Tickets by status.
-        //        private Dictionary<string, List<Ticket>> FilterProjectTicketsByStatus(Project project)
-        //        {
-        //            Dictionary<string, List<Ticket>> filteredTicketsByProjectLists = new Dictionary<string, List<Ticket>>();
-
-        //            foreach (Ticket ticket in project.Tickets)
-        //            {
-        //                if (ticket.status == "todo")
-        //                {
-        //                    filteredTicketsByProjectLists["todo"].Add(ticket);
-        //                }
-        //                else if (ticket.status == "doing")
-        //                {
-        //                    filteredTicketsByProjectLists["doing"].Add(ticket);
-        //                }
-        //                else
-        //                {
-        //                    filteredTicketsByProjectLists["done"].Add(ticket);
-        //                }
-        //            }
-
-        //            return filteredTicketsByProjectLists;
-        //        }
+            return filteredTickets;
+        }
     }
 }
 

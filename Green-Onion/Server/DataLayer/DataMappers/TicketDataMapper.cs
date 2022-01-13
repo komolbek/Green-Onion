@@ -25,7 +25,7 @@ namespace GreenOnion.Server.DataLayer.DataMappers
                 status = ticketEntity.status,
                 description = ticketEntity.description,
                 complexity = ticketEntity.complexity,
-                startedDate = ticketEntity.startecreatedDate,
+                startedDate = ticketEntity.createdDate,
                 closedDate = ticketEntity.closedDate,
                 dueDate = ticketEntity.dueDate
             };

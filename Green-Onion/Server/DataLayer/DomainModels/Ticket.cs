@@ -33,7 +33,7 @@ namespace GreenOnion.Server.DataLayer.DomainModels
         public string complexity { get; set; }
 
         [Required]
-        public string startecreatedDate { get; set; }
+        public string createdDate { get; set; }
 
         public string closedDate { get; set; }
         public string dueDate { get; set; }

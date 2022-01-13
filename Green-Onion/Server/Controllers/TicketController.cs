@@ -116,3 +116,41 @@
 //        }
 //    }
 //}
+
+// POST
+
+// Gets Ticket & Project from DB by IDs, adds Ticket to Project and saves Project records in the DB
+// PUT: api/projects
+//[Route("addTicketByProjectId/{projectId}")]
+//[HttpPut]
+//public async Task<ActionResult<Project>> AddTicket(string projId, Ticket ticket)
+//{
+//    Project project = await _context.projects.FindAsync(projId);
+//    project.Tickets.Add(ticket);
+
+//    _context.tickets.Add(ticket);
+
+//    await _context.SaveChangesAsync();
+
+//    return project;
+//}
+
+//DELETE
+
+// Removes ticket from project. Also deletes ticket from DB. Call this api to delete ticket.
+//        // UPDATE: api/projects
+//        [Route("removeTicket/{ticketId}/inProject/{projectId}")]
+//        [HttpPut]
+//        public async Task<ActionResult<Project>> RemoveTicket(string projectId, string ticketId)
+//        {
+//            Project project = await _context.projects.FindAsync(projectId);
+//            Ticket ticket = project.Tickets.Find(tick => tick.TicketId == ticketId);
+
+//            project.Tickets.Remove(ticket);
+
+//            _context.tickets.Remove(ticket);
+
+//            await _context.SaveChangesAsync();
+
+//            return project;
+//        }
